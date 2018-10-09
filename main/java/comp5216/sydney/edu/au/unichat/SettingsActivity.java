@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -47,6 +48,7 @@ public class SettingsActivity extends AppCompatActivity {
     private StorageReference filePath;
     private String downloadUrl;
     private String retrieveProfileImage;
+    private Toolbar SettingsToolBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +59,7 @@ public class SettingsActivity extends AppCompatActivity {
         currentUserID=mAuth.getCurrentUser().getUid();
         RootRef = FirebaseDatabase.getInstance().getReference();
         UserProfileImagesRef=FirebaseStorage.getInstance().getReference().child("Profile Images");
-        loadingBar=new ProgressDialog(this);
+
 
         InitializeFields();
 
@@ -97,6 +99,14 @@ public class SettingsActivity extends AppCompatActivity {
         userName=(EditText)findViewById(R.id.set_user_name);
         userStatus=(EditText)findViewById(R.id.set_profile_status);
         userProfileImage=(CircleImageView)findViewById(R.id.set_profile_image);
+        loadingBar=new ProgressDialog(this);
+
+        SettingsToolBar =(Toolbar) findViewById(R.id.settings_toolbar);
+        setSupportActionBar(SettingsToolBar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setTitle("Account Settings");
+
     }
 
     @Override
