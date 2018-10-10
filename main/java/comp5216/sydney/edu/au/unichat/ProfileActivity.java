@@ -18,6 +18,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.util.HashMap;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfileActivity extends AppCompatActivity {
@@ -39,6 +41,7 @@ public class ProfileActivity extends AppCompatActivity {
         UserRef=FirebaseDatabase.getInstance().getReference().child("Users");
         ChatRequestRef=FirebaseDatabase.getInstance().getReference().child("Chat requests");
         ContactRef=FirebaseDatabase.getInstance().getReference().child("Contacts");
+
 
         receiverUserID=getIntent().getExtras().get("visit_user_id").toString();
         senderUserId = mAuth.getCurrentUser().getUid();
@@ -275,9 +278,13 @@ public class ProfileActivity extends AppCompatActivity {
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
-                                            SendMessageRequestButton.setEnabled(true);
-                                            Current_State = "request_sent";
-                                            SendMessageRequestButton.setText("Cancel Chat Request");
+                                            if(task.isSuccessful()){
+
+                                                SendMessageRequestButton.setEnabled(true);
+                                                Current_State = "request_sent";
+                                                SendMessageRequestButton.setText("Cancel Chat Request");
+                                            }
+
                                         }
                                     });
                         }
