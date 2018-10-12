@@ -25,6 +25,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class ProfileActivity extends AppCompatActivity {
     private String receiverUserID, senderUserId, Current_State;
 
+    //add toolbar
+    private Toolbar profileToolBar;
     private CircleImageView userProfileImage;
     private TextView userProfileName, userProfileStatus;
     private Button SendMessageRequestButton, DeclineMessageRequestButton;
@@ -36,6 +38,13 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+        
+        //add toolbar and back
+        setSupportActionBar(profileToolBar);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowCustomEnabled(true);
 
         mAuth = FirebaseAuth.getInstance();
         UserRef=FirebaseDatabase.getInstance().getReference().child("Users");
