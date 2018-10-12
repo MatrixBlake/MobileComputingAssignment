@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         if(currentUser==null){
             SendUserToLoginActivity();
-        }{
+        }else{
             VerifyUserExistence();
         }
     }

@@ -75,7 +75,7 @@ public class RequestsFragment extends Fragment {
         super.onStart();
         FirebaseRecyclerOptions<Contacts> options =
                 new FirebaseRecyclerOptions.Builder<Contacts>()
-                .setQuery(ChatRequestRef.child(currentUserID), Contacts.class)
+                .setQuery(ChatRequestRef.child(currentUserID).orderByChild("request_type").equalTo("received"), Contacts.class)
                 .build();
 
         FirebaseRecyclerAdapter<Contacts, RequestsViewHolder> adapter =
@@ -194,6 +194,7 @@ public class RequestsFragment extends Fragment {
                                             }
                                         });
                                     }else{
+                                        holder.itemView.setVisibility(View.GONE);
 
                                     }
                                 }
