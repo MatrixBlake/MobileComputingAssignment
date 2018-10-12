@@ -114,6 +114,8 @@ public class GroupChatActivity extends AppCompatActivity {
     private void InitializeFields() {
         mToolbar=(Toolbar)findViewById(R.id.group_chat_bar_layout);
         setSupportActionBar(mToolbar);
+        //add back
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(currentGroupName);
 
         SendMessageButton=(ImageButton)findViewById(R.id.send_message_button);
