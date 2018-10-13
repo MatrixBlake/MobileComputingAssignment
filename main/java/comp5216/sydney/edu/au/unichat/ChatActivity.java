@@ -30,7 +30,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,14 +42,14 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatActivity extends AppCompatActivity {
 
-    private String messageReceiverID, messageReceiverName, messageReceiverImage, messageSenderID;
+    private String messageReceiverID, messageReceiverName, messageReceiverImage, messageSenderID, currentDate, currentTime;
 
     private TextView userName, userLastSeen;
     private CircleImageView userImage;
 
     private Toolbar ChatToolBar;
     private FirebaseAuth mAuth;
-    private DatabaseReference RootRef;
+    private DatabaseReference RootRef, messageSender, messageReceiver;
 
     private ImageButton SendMessageButton;
     private EditText MessageInputText;
@@ -146,6 +149,9 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void SendMessage(){
+
+        Date date = new Date();
+
         String messageText = MessageInputText.getText().toString();
 
         if(TextUtils.isEmpty(messageText)){
@@ -157,6 +163,9 @@ public class ChatActivity extends AppCompatActivity {
             DatabaseReference userMessageKeyRef = RootRef.child("Messages")
                     .child(messageSenderID).child(messageReceiverID).push();
 
+            messageSender = RootRef.child("Contacts").child(messageSenderID).child(messageReceiverID);
+            messageReceiver = RootRef.child("Contacts").child(messageReceiverID).child(messageSenderID);
+
             String messagePushID = userMessageKeyRef.getKey();
 
             Map messageTextBody = new HashMap();
@@ -167,6 +176,9 @@ public class ChatActivity extends AppCompatActivity {
             Map messageBodyDetails = new HashMap();
             messageBodyDetails.put(messageSenderRef+"/"+messagePushID, messageTextBody);
             messageBodyDetails.put(messageReceiverRef+"/"+messagePushID, messageTextBody);
+
+            messageSender.child("LastTime").setValue(-date.getTime());
+            messageReceiver.child("LastTime").setValue(-date.getTime());
 
             RootRef.updateChildren(messageBodyDetails).addOnCompleteListener(new OnCompleteListener() {
                 @Override
