@@ -10,12 +10,33 @@
         layout="@layout/app_bar_layout"
         android:id="@+id/find_friends_toolbar"></include>
 
+    <LinearLayout
+        android:id="@+id/myLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/find_friends_toolbar"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/find_friends_edit_text"
+            android:layout_width="330dp"
+            android:layout_height="wrap_content"
+            android:hint="Search username"
+            android:padding="17dp" />
+
+        <Button
+            android:id="@+id/search_button"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:text="Search" />
+    </LinearLayout>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/find_friends_recycler_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/find_friends_toolbar"
+        android:layout_below="@+id/myLinearLayout"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"></android.support.v7.widget.RecyclerView>
 
-</RelativeLayout>
