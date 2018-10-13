@@ -28,6 +28,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.util.Date;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
@@ -122,6 +124,9 @@ public class RequestsFragment extends Fragment {
                                                             @Override
                                                             public void onClick(DialogInterface dialog, int which) {
                                                                 if(which == 0){
+                                                                    Date date = new Date();
+                                                                    ContactsRef.child(currentUserID).child(list_user_id).child("LastTime").setValue(-date.getTime());
+                                                                    ContactsRef.child(list_user_id).child(currentUserID).child("LastTime").setValue(-date.getTime());
                                                                     ContactsRef.child(currentUserID).child(list_user_id).child("Contact")
                                                                             .setValue("Saved").addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                         @Override
