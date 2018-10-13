@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -30,7 +31,7 @@ public class CreateGroupActivity extends AppCompatActivity {
 
 
     private ListView createGroupListview;
-    private TextView groupNameTextView, peopleTextView;
+    private TextView peopleTextView;
     private ArrayAdapter<String> itemsAdapter;
     ArrayList<String> items=new ArrayList<>();
     ArrayList<String> userKeys=new ArrayList<>();
@@ -38,6 +39,7 @@ public class CreateGroupActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
     private String currentID;
     private String groupName;
+    private Toolbar GroupToolBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +47,6 @@ public class CreateGroupActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_group);
 
         createGroupListview=findViewById(R.id.lstView_create_group);
-        groupNameTextView=findViewById(R.id.create_group_group_name);
         peopleTextView=findViewById(R.id.create_group_people);
 
         groupName = getIntent().getStringExtra("GroupName");
@@ -54,7 +55,14 @@ public class CreateGroupActivity extends AppCompatActivity {
         mAuth=FirebaseAuth.getInstance();
         currentID=mAuth.getUid();
 
-        groupNameTextView.setText(groupName);
+
+
+        GroupToolBar =(Toolbar) findViewById(R.id.create_group_toolbar);
+        setSupportActionBar(GroupToolBar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setTitle("Add friends to "+groupName);
+
 
 
 
@@ -102,7 +110,7 @@ public class CreateGroupActivity extends AppCompatActivity {
                                             position, long rowId) {
                                         String userKey = userKeys.get(position);
                                         RootRef.child("Users").child(userKey).child("groups").child(groupName).child("in").setValue("0");
-                                        Toast.makeText(CreateGroupActivity.this, items.get(position)+" has been removed from Group "+groupName, Toast.LENGTH_SHORT).show();
+                                        peopleTextView.setText(items.get(position)+" has been removed from Group "+groupName);
                                         return true;
                                     }
 
@@ -112,7 +120,7 @@ public class CreateGroupActivity extends AppCompatActivity {
                                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                         String userKey = userKeys.get(position);
                                         RootRef.child("Users").child(userKey).child("groups").child(groupName).child("in").setValue("1");
-                                        Toast.makeText(CreateGroupActivity.this, items.get(position)+" has been added to Group "+groupName, Toast.LENGTH_SHORT).show();
+                                        peopleTextView.setText( items.get(position)+" has been added to Group "+groupName);
 
                                     }
                                 });

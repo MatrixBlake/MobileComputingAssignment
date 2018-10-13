@@ -102,11 +102,11 @@ public class ContactsFragment extends Fragment {
                         holder.itemView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Intent chatIntent = new Intent(getContext(), ChatActivity.class);
-                                chatIntent.putExtra("visit_user_id",usersIDs);
-                                chatIntent.putExtra("visit_user_name", retName);
-                                chatIntent.putExtra("visit_image", retImage[0]);
-                                startActivity(chatIntent);
+                                Intent profileIntent = new Intent(getContext(), ProfileActivity.class);
+                                profileIntent.putExtra("visit_user_id",usersIDs);
+                                profileIntent.putExtra("visit_user_name", retName);
+                                profileIntent.putExtra("visit_image", retImage[0]);
+                                startActivity(profileIntent);
                             }
                         });
                     }

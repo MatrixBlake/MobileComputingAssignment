@@ -57,7 +57,6 @@ public class ProfileActivity extends AppCompatActivity {
         receiverUserID=getIntent().getExtras().get("visit_user_id").toString();
         senderUserId = mAuth.getCurrentUser().getUid();
 
-        Toast.makeText(this, "User ID: "+receiverUserID, Toast.LENGTH_SHORT).show();
 
         userProfileImage=(CircleImageView)findViewById(R.id.visit_profile_image);
         userProfileName=(TextView)findViewById(R.id.visit_profile_name);
