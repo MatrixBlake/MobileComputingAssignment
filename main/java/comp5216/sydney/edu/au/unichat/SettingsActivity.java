@@ -1,9 +1,11 @@
 package comp5216.sydney.edu.au.unichat;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -36,7 +38,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    private Button UpdateAccountsSettings;
+    private Button UpdateAccountsSettings, AddNewCourses;
     private EditText userName,userStatus;
     private CircleImageView userProfileImage;
     private String currentUserID;
@@ -71,6 +73,13 @@ public class SettingsActivity extends AppCompatActivity {
                 UpdateSettings();
             }
         });
+
+        AddNewCourses.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AddCourses();
+            }
+        });
         
         RetrieveUserInfo();
 
@@ -96,6 +105,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void InitializeFields() {
         UpdateAccountsSettings=(Button)findViewById(R.id.update_settings_button);
+        AddNewCourses=(Button)findViewById(R.id.add_course_button);
         userName=(EditText)findViewById(R.id.set_user_name);
         userStatus=(EditText)findViewById(R.id.set_profile_status);
         userProfileImage=(CircleImageView)findViewById(R.id.set_profile_image);
@@ -104,7 +114,6 @@ public class SettingsActivity extends AppCompatActivity {
         SettingsToolBar =(Toolbar) findViewById(R.id.settings_toolbar);
         setSupportActionBar(SettingsToolBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setTitle("Account Settings");
 
     }
@@ -204,6 +213,26 @@ public class SettingsActivity extends AppCompatActivity {
                         }
                     });
         }
+    }
+
+    private void AddCourses() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this,R.style.AlertDialog);
+        builder.setTitle("Enter Course Number: ");
+
+        final EditText groupNameField = new EditText(SettingsActivity.this);
+        groupNameField.setHint("e.g 1234");
+        builder.setView(groupNameField);
+
+
+
+        builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                RootRef.child("Users").child(currentUserID).child("groups").child(groupNameField.getText().toString()).child("in").setValue("1");
+            }
+        });
+
+        builder.show();
     }
 
     private void RetrieveUserInfo() {
