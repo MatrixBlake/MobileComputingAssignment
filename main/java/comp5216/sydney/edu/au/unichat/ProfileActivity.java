@@ -1,8 +1,10 @@
 package comp5216.sydney.edu.au.unichat;
 
 import android.support.annotation.NonNull;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -25,7 +27,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class ProfileActivity extends AppCompatActivity {
     private String receiverUserID, senderUserId, Current_State;
 
-    //add toolbar
     private Toolbar profileToolBar;
     private CircleImageView userProfileImage;
     private TextView userProfileName, userProfileStatus;
@@ -38,8 +39,9 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-        
-        //add toolbar and back
+
+        profileToolBar=(Toolbar)findViewById(R.id.profile_toolbar);
+
         setSupportActionBar(profileToolBar);
 
         ActionBar actionBar = getSupportActionBar();
@@ -302,3 +304,4 @@ public class ProfileActivity extends AppCompatActivity {
 
     }
 }
+
