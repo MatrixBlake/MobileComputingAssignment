@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
@@ -30,9 +32,10 @@ import de.hdodenhof.circleimageview.CircleImageView;
  */
 public class ChatsFragment extends Fragment {
 
-    private  View PrivateChatsView;
+    private View PrivateChatsView;
     private RecyclerView chatsList;
-    private DatabaseReference ChatsRef, UsersRef;
+    private DatabaseReference UsersRef, MessageRef;
+    private Query ChatsRef;
     private FirebaseAuth mAuth;
     private String currentUserID;
 
@@ -50,8 +53,10 @@ public class ChatsFragment extends Fragment {
 
         mAuth = FirebaseAuth.getInstance();
         currentUserID = mAuth.getCurrentUser().getUid();
-        ChatsRef = FirebaseDatabase.getInstance().getReference().child("Contacts").child(currentUserID);
+        ChatsRef = FirebaseDatabase.getInstance().getReference().child("Contacts").child(currentUserID).orderByChild("LastTime");
+
         UsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        MessageRef = FirebaseDatabase.getInstance().getReference().child("Messages").child(currentUserID);
 
         chatsList=(RecyclerView)PrivateChatsView.findViewById(R.id.chats_list);
         chatsList.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -77,6 +82,8 @@ public class ChatsFragment extends Fragment {
                         final String usersIDs = getRef(position).getKey();
                         final String[] retImage = {"default_image"};
 
+
+
                         UsersRef.child(usersIDs).addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -87,10 +94,8 @@ public class ChatsFragment extends Fragment {
                                    }
 
                                    final String retName = dataSnapshot.child("name").getValue().toString();
-                                   final String retStatus = dataSnapshot.child("status").getValue().toString();
 
                                    holder.userName.setText(retName);
-                                   holder.userStatus.setText("Last Seen: "+ "\n" + "Date"+ " Time");
 
                                    holder.itemView.setOnClickListener(new View.OnClickListener() {
                                        @Override
@@ -112,6 +117,21 @@ public class ChatsFragment extends Fragment {
                             }
                         });
 
+                        MessageRef.child(usersIDs).orderByKey().limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                for (DataSnapshot child: dataSnapshot.getChildren()){
+                                    String retStatus = child.child("message").getValue().toString();
+                                    holder.userStatus.setText(retStatus);
+                                }
+
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
 
                     }
 
