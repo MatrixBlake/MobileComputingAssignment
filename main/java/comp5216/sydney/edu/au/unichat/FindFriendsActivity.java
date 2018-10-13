@@ -131,4 +131,3 @@ public class FindFriendsActivity extends AppCompatActivity {
         }
     }
 }
-

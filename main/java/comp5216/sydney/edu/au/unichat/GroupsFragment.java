@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -34,7 +35,10 @@ public class GroupsFragment extends Fragment {
     private ArrayAdapter<String> arrayAdapter;
     private ArrayList<String> list_of_groups = new ArrayList<>();
 
-    private DatabaseReference GroupRef;
+    private DatabaseReference RootRef;
+    private FirebaseAuth mAuth;
+
+    private String currentID;
 
 
     public GroupsFragment() {
@@ -47,7 +51,9 @@ public class GroupsFragment extends Fragment {
                              Bundle savedInstanceState) {
         groupFragmentView= inflater.inflate(R.layout.fragment_groups, container, false);
 
-        GroupRef=FirebaseDatabase.getInstance().getReference().child("Groups");
+        RootRef=FirebaseDatabase.getInstance().getReference();
+        mAuth =FirebaseAuth.getInstance();
+        currentID=mAuth.getUid();
 
         IntializeFields();
 
@@ -75,13 +81,14 @@ public class GroupsFragment extends Fragment {
 
 
     private void RetrieveAndDisplayGroups() {
-        GroupRef.addValueEventListener(new ValueEventListener() {
+        RootRef.child("Users").child(currentID).child("groups").orderByChild("in").equalTo("1").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Set<String> set = new HashSet<>();
                 Iterator iterator = dataSnapshot.getChildren().iterator();
 
                 while(iterator.hasNext()){
+
                     set.add(((DataSnapshot)iterator.next()).getKey());
                 }
 

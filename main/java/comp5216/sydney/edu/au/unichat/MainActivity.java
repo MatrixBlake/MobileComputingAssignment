@@ -154,25 +154,37 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void CreateNewGroup(final String groupName) {
-        if(!RootRef.child("Groups").child(groupName).getKey().equals(groupName)){
-            RootRef.child("Groups").child(groupName).setValue("")
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if(task.isSuccessful()){
-                                RootRef.child("Users").child(currentUser.getUid()).child("groups").child(groupName).setValue("")
-                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                SendUserToCreateGroupActivity(groupName);
-                                            }
-                                        });
-                            }
-                        }
-                    });
-        }else{
-            Toast.makeText(this, groupName+" already exists!", Toast.LENGTH_SHORT).show();
-        }
+        RootRef.child("Groups").child(groupName).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.exists()){
+
+                    RootRef.child("Groups").child(groupName).setValue("")
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if(task.isSuccessful()){
+                                        RootRef.child("Users").child(currentUser.getUid()).child("groups").child(groupName).child("in").setValue("1")
+                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                        SendUserToCreateGroupActivity(groupName);
+                                                    }
+                                                });
+                                    }
+                                }
+                            });
+                }else{
+                    Toast.makeText(MainActivity.this, groupName+" already created!", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
 
     }
 
