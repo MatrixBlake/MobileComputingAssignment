@@ -80,7 +80,7 @@ public class SettingsActivity extends AppCompatActivity {
                 AddCourses();
             }
         });
-        
+
         RetrieveUserInfo();
 
         userProfileImage.setOnClickListener(new View.OnClickListener() {

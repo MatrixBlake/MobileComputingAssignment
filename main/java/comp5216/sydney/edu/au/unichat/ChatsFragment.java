@@ -72,8 +72,8 @@ public class ChatsFragment extends Fragment {
 
         FirebaseRecyclerOptions<Contacts> options=
                 new FirebaseRecyclerOptions.Builder<Contacts>()
-                .setQuery(ChatsRef,Contacts.class)
-                .build();
+                        .setQuery(ChatsRef,Contacts.class)
+                        .build();
 
         FirebaseRecyclerAdapter<Contacts, ChatsViewHolder> adapter=
                 new FirebaseRecyclerAdapter<Contacts, ChatsViewHolder>(options) {
@@ -87,27 +87,27 @@ public class ChatsFragment extends Fragment {
                         UsersRef.child(usersIDs).addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                               if(dataSnapshot.exists()){
-                                   if(dataSnapshot.hasChild("image")){
-                                       retImage[0] = dataSnapshot.child("image").getValue().toString();
-                                       Picasso.get().load(retImage[0]).placeholder(R.drawable.profile_image).into(holder.profileImage);
-                                   }
+                                if(dataSnapshot.exists()){
+                                    if(dataSnapshot.hasChild("image")){
+                                        retImage[0] = dataSnapshot.child("image").getValue().toString();
+                                        Picasso.get().load(retImage[0]).placeholder(R.drawable.profile_image).into(holder.profileImage);
+                                    }
 
-                                   final String retName = dataSnapshot.child("name").getValue().toString();
+                                    final String retName = dataSnapshot.child("name").getValue().toString();
 
-                                   holder.userName.setText(retName);
+                                    holder.userName.setText(retName);
 
-                                   holder.itemView.setOnClickListener(new View.OnClickListener() {
-                                       @Override
-                                       public void onClick(View v) {
-                                           Intent chatIntent = new Intent(getContext(),ChatActivity.class);
-                                           chatIntent.putExtra("visit_user_id",usersIDs);
-                                           chatIntent.putExtra("visit_user_name", retName);
-                                           chatIntent.putExtra("visit_image", retImage[0]);
-                                           startActivity(chatIntent);
-                                       }
-                                   });
-                               }
+                                    holder.itemView.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            Intent chatIntent = new Intent(getContext(),ChatActivity.class);
+                                            chatIntent.putExtra("visit_user_id",usersIDs);
+                                            chatIntent.putExtra("visit_user_name", retName);
+                                            chatIntent.putExtra("visit_image", retImage[0]);
+                                            startActivity(chatIntent);
+                                        }
+                                    });
+                                }
 
                             }
 
@@ -122,7 +122,7 @@ public class ChatsFragment extends Fragment {
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 for (DataSnapshot child: dataSnapshot.getChildren()){
                                     String retStatus = child.child("message").getValue().toString();
-                                    holder.userStatus.setText(retStatus);
+                                    holder.userStatus.setText("Last message: "+retStatus);
                                 }
 
                             }

@@ -25,10 +25,8 @@
         <activity
             android:name=".SettingsActivity"
             android:parentActivityName=".MainActivity" />
-        <activity 
-            android:name=".GroupChatActivity"
+        <activity android:name=".GroupChatActivity"
             android:parentActivityName=".MainActivity"/>
-        <activity android:name=".PhoneLoginActivity" />
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
