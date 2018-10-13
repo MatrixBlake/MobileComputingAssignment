@@ -6,6 +6,10 @@
     android:layout_height="match_parent"
     android:background="@drawable/profile_activity"
     tools:context=".ProfileActivity">
+    
+    <include
+        android:id="@+id/profile_toolbar"
+        layout="@layout/app_bar_layout"></include>
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/visit_profile_image"
