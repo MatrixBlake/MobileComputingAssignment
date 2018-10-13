@@ -65,8 +65,8 @@ public class ContactsFragment extends Fragment {
 
         FirebaseRecyclerOptions options =
                 new FirebaseRecyclerOptions.Builder<Contacts>()
-                .setQuery(ContactsRef, Contacts.class)
-                .build();
+                        .setQuery(ContactsRef, Contacts.class)
+                        .build();
 
         FirebaseRecyclerAdapter<Contacts, ContactsViewHolder> adapter
                 = new FirebaseRecyclerAdapter<Contacts, ContactsViewHolder>(options) {

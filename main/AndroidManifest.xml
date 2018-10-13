@@ -25,9 +25,7 @@
         <activity
             android:name=".SettingsActivity"
             android:parentActivityName=".MainActivity" />
-        <activity android:name=".GroupChatActivity"
-                  //add parent activity
-            android:parentActivityName=".MainActivity"/>
+        <activity android:name=".GroupChatActivity" />
         <activity android:name=".PhoneLoginActivity" />
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
@@ -35,11 +33,14 @@
         <activity
             android:name=".FindFriendsActivity"
             android:parentActivityName=".MainActivity" />
-        <activity android:name=".ProfileActivity"
-                  //add parent activity
-            android:parentActivityName=".FindFriendsActivity" />
-        <activity android:name=".ChatActivity"
-            android:parentActivityName=".MainActivity"></activity>
+        <activity
+            android:name=".ProfileActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".ChatActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity android:name=".CreateGroupActivity" />
+        <activity android:name=".PostsActivity"></activity>
     </application>
 
 </manifest>

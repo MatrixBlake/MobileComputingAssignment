@@ -12,6 +12,11 @@
         app:showAsAction="never"></item>
 
     <item
+        android:title="Posts"
+        android:id="@+id/main_posts_option"
+        app:showAsAction="never"></item>
+
+    <item
         android:title="Settings"
         android:id="@+id/main_settings_option"
         app:showAsAction="never"></item>

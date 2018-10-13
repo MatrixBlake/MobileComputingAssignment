@@ -108,11 +108,16 @@ public class MainActivity extends AppCompatActivity {
         if(item.getItemId()==R.id.main_find_friends_option){
             SendUserToFindFriendsActivity();
         }
+        if(item.getItemId()==R.id.main_posts_option){
+            SendUserToPostActivity();
+        }
         if(item.getItemId()==R.id.main_create_group_option){
             RequestNewGroup();
         }
         return true;
     }
+
+
 
     private void RequestNewGroup() {
 
@@ -149,15 +154,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void CreateNewGroup(final String groupName) {
-        RootRef.child("Groups").child(groupName).setValue("")
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful()){
-                            Toast.makeText(MainActivity.this, groupName+" is created successfully", Toast.LENGTH_SHORT).show();
+        if(!RootRef.child("Groups").child(groupName).getKey().equals(groupName)){
+            RootRef.child("Groups").child(groupName).setValue("")
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if(task.isSuccessful()){
+                                RootRef.child("Users").child(currentUser.getUid()).child("groups").child(groupName).setValue("")
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                SendUserToCreateGroupActivity(groupName);
+                                            }
+                                        });
+                            }
                         }
-                    }
-                });
+                    });
+        }else{
+            Toast.makeText(this, groupName+" already exists!", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    private void SendUserToCreateGroupActivity(String groupName) {
+        Intent createGroupIntent = new Intent(MainActivity.this,CreateGroupActivity.class);
+        createGroupIntent.putExtra("GroupName",groupName);
+        startActivity(createGroupIntent);
     }
 
     private void SendUserToLoginActivity() {
@@ -165,6 +187,11 @@ public class MainActivity extends AppCompatActivity {
         loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(loginIntent);
         finish();
+    }
+
+    private void SendUserToPostActivity() {
+        Intent postActivity = new Intent(MainActivity.this,PostsActivity.class);
+        startActivity(postActivity);
     }
 
     private void SendUserToSettingsActivity() {
