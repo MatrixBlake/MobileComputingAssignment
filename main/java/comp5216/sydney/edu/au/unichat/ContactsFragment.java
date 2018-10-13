@@ -1,6 +1,7 @@
 package comp5216.sydney.edu.au.unichat;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -71,9 +72,10 @@ public class ContactsFragment extends Fragment {
                 = new FirebaseRecyclerAdapter<Contacts, ContactsViewHolder>(options) {
             @Override
             protected void onBindViewHolder(@NonNull final ContactsViewHolder holder, int position, @NonNull Contacts model) {
-                String userIDs = getRef(position).getKey();
+                final String usersIDs = getRef(position).getKey();
+                final String[] retImage = {"default_image"};
 
-                UsersRef.child(userIDs).addValueEventListener(new ValueEventListener() {
+                UsersRef.child(usersIDs).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if(dataSnapshot.hasChild("image")){
@@ -83,15 +85,30 @@ public class ContactsFragment extends Fragment {
 
                             holder.userName.setText(profileName);
                             holder.userStatus.setText(profileStatus);
+                            retImage[0] = dataSnapshot.child("image").getValue().toString();
                             Picasso.get().load(userImage).placeholder(R.drawable.profile_image).into(holder.profileImage);
+
                         }else{
                             String profileName = dataSnapshot.child("name").getValue().toString();
                             String profileStatus = dataSnapshot.child("status").getValue().toString();
 
                             holder.userName.setText(profileName);
                             holder.userStatus.setText(profileStatus);
-                            //Picasso.get().load(userImage).placeholder(R.drawable.profile_image).into(holder.profileImage);
+
                         }
+
+                        final String retName = dataSnapshot.child("name").getValue().toString();
+
+                        holder.itemView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent chatIntent = new Intent(getContext(), ChatActivity.class);
+                                chatIntent.putExtra("visit_user_id",usersIDs);
+                                chatIntent.putExtra("visit_user_name", retName);
+                                chatIntent.putExtra("visit_image", retImage[0]);
+                                startActivity(chatIntent);
+                            }
+                        });
                     }
 
                     @Override
