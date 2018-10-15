@@ -41,7 +41,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/send_message"
-            android:layout_alignParentEnd="true"/>
+            android:layout_toStartOf="@id/send_picture_btn"/>
+
+        <ImageButton
+            android:id="@+id/send_picture_btn"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/send_image" />
 
 
     </RelativeLayout>

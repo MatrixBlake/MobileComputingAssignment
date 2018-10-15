@@ -177,7 +177,7 @@ public class CommentPostActivity extends AppCompatActivity {
     }
 
     private void RetrieveAndDisplayComments() {
-        postRef.child("comments").addValueEventListener(new ValueEventListener() {
+        postRef.child("comments").orderByChild("time").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 

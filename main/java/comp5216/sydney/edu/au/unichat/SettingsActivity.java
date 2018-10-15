@@ -32,9 +32,11 @@ import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.io.File;
 import java.util.HashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import id.zelory.compressor.Compressor;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -51,6 +53,7 @@ public class SettingsActivity extends AppCompatActivity {
     private String downloadUrl;
     private String retrieveProfileImage;
     private Toolbar SettingsToolBar;
+    private File compressedImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,10 +144,14 @@ public class SettingsActivity extends AppCompatActivity {
                 loadingBar.show();
 
                 Uri resultUri = result.getUri();
+                try{
+                    compressedImage = new Compressor(this).compressToFile(FileUtil.from(this, resultUri));
+                }catch (Exception e){}
+                Uri resultUri2= Uri.fromFile(new File(compressedImage.getAbsolutePath()));
 
                 filePath = UserProfileImagesRef.child(currentUserID+".jpg");
 
-                filePath.putFile(resultUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                filePath.putFile(resultUri2).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                         if(task.isSuccessful()){

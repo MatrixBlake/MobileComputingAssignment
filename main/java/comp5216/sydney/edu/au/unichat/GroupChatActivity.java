@@ -132,6 +132,8 @@ public class GroupChatActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        messagesList.clear();
+
         RootRef.child("Groups").child(groupName)
                 .addChildEventListener(new ChildEventListener() {
                     @Override

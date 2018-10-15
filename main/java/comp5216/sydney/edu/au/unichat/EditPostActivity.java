@@ -35,10 +35,13 @@ import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+
+import id.zelory.compressor.Compressor;
 
 public class EditPostActivity extends AppCompatActivity {
 
@@ -57,6 +60,7 @@ public class EditPostActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private String downloadUrl;
+    private File compressedImage;
 
 
     private String saveCurrentDate, saveCurrentTime, postRandomName,current_user_id;
@@ -125,6 +129,13 @@ public class EditPostActivity extends AppCompatActivity {
 
                 Uri resultUri = result.getUri();
 
+                try{
+                    compressedImage = new Compressor(this).compressToFile(FileUtil.from(this, resultUri));
+                }catch (Exception e){}
+                Uri resultUri2= Uri.fromFile(new File(compressedImage.getAbsolutePath()));
+
+
+
                 Calendar calFordDate= Calendar.getInstance();
                 SimpleDateFormat currentDate=new SimpleDateFormat("yyyy-MM-dd");
                 saveCurrentDate=currentDate.format(calFordDate.getTime());
@@ -138,7 +149,7 @@ public class EditPostActivity extends AppCompatActivity {
 
                 filePath = UserPostImagesRef.child(current_user_id+postRandomName+".jpg");
 
-                filePath.putFile(resultUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                filePath.putFile(resultUri2).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                         if(task.isSuccessful()){
