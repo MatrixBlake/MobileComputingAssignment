@@ -335,16 +335,13 @@ public class ProfileActivity extends AppCompatActivity {
 
                     final String retName = dataSnapshot.child("name").getValue().toString();
 
-                    DeclineMessageRequestButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent chatIntent = new Intent(ProfileActivity.this,ChatActivity.class);
-                            chatIntent.putExtra("visit_user_id",receiverUserID);
-                            chatIntent.putExtra("visit_user_name", retName);
-                            chatIntent.putExtra("visit_image", retImage[0]);
-                            startActivity(chatIntent);
-                        }
-                    });
+
+                    Intent chatIntent = new Intent(ProfileActivity.this,ChatActivity.class);
+                    chatIntent.putExtra("visit_user_id",receiverUserID);
+                    chatIntent.putExtra("visit_user_name", retName);
+                    chatIntent.putExtra("visit_image", retImage[0]);
+                    startActivity(chatIntent);
+
                 }
 
             }
