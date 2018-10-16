@@ -3,11 +3,13 @@ package comp5216.sydney.edu.au.unichat;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -18,7 +20,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -44,13 +45,19 @@ public class PostsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_posts);
 
+        mToolbar=(Toolbar)findViewById(R.id.toolbar);
+
+        setSupportActionBar(mToolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowCustomEnabled(true);
+
         mAuth=FirebaseAuth.getInstance();
         currentUserID= mAuth.getCurrentUser().getUid();
 
         UsersRef= FirebaseDatabase.getInstance().getReference().child("Users");
         PostsRef=FirebaseDatabase.getInstance().getReference().child("Posts");
-
-        //mToolbar=(Toolbar)findViewById(R.id.toolbar);
 
         postlist=(RecyclerView)findViewById(R.id.all_users_post_list);
         postlist.setLayoutManager(new LinearLayoutManager(this));
