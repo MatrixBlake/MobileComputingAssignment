@@ -74,7 +74,6 @@ public class EditPostActivity extends AppCompatActivity {
         current_user_id=mAuth.getCurrentUser().getUid();
 
 
-
         UsersRef= FirebaseDatabase.getInstance().getReference().child("Users");
         PostRef= FirebaseDatabase.getInstance().getReference().child("Posts");
         UserPostImagesRef=FirebaseStorage.getInstance().getReference().child("Post Images");
@@ -90,7 +89,7 @@ public class EditPostActivity extends AppCompatActivity {
         Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
         getSupportActionBar().setTitle("update Post");
 
 
@@ -108,10 +107,11 @@ public class EditPostActivity extends AppCompatActivity {
                 ValidatePostInfo();
             }
         });
-
-
-
     }
+
+
+
+
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

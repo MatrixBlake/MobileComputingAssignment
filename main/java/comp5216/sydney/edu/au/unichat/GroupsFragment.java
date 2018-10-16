@@ -69,7 +69,6 @@ public class GroupsFragment extends Fragment {
                 String currentGroupKey = groupKeys.get(position);
                 groupChatIntent.putExtra("groupName",currentGroupName);
                 groupChatIntent.putExtra("groupKey",currentGroupKey);
-                Toast.makeText(getContext(), currentGroupKey, Toast.LENGTH_SHORT).show();
                 startActivity(groupChatIntent);
             }
         });

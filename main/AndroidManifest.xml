@@ -25,24 +25,16 @@
         <activity
             android:name=".SettingsActivity"
             android:parentActivityName=".MainActivity" />
-        <activity
-            android:name=".GroupChatActivity"
-            android:parentActivityName=".MainActivity" />
+        <activity android:name=".GroupChatActivity" />
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
         <activity
             android:name=".FindFriendsActivity"
             android:parentActivityName=".MainActivity" />
-        <activity
-            android:name=".ProfileActivity"
-            android:parentActivityName=".MainActivity" />
-        <activity
-            android:name=".ChatActivity"
-            android:parentActivityName=".MainActivity" />
-        <activity
-            android:name=".CreateGroupActivity"
-            android:parentActivityName=".MainActivity" />
+        <activity android:name=".ProfileActivity"/>
+        <activity android:name=".ChatActivity" />
+        <activity android:name=".CreateGroupActivity"/>
         <activity android:name=".PostsActivity" />
         <activity android:name=".EditPostActivity" />
         <activity android:name=".CommentPostActivity"></activity>
