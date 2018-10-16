@@ -3,6 +3,7 @@ package comp5216.sydney.edu.au.unichat;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -97,10 +98,11 @@ public class RequestsFragment extends Fragment {
                                         UsersRef.child(list_user_id).addValueEventListener(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                final String[] requestProfileImage = {"default_image"};
                                                 if(dataSnapshot.hasChild("image")){
-                                                    final String requestProfileImage = dataSnapshot.child("image").getValue().toString();
+                                                    requestProfileImage[0] = dataSnapshot.child("image").getValue().toString();
 
-                                                    Picasso.get().load(requestProfileImage).placeholder(R.drawable.profile_image).into(holder.profileImage);
+                                                    Picasso.get().load(requestProfileImage[0]).placeholder(R.drawable.profile_image).into(holder.profileImage);
                                                 }
                                                 final String requestUserName = dataSnapshot.child("name").getValue().toString();
                                                 final String requestUserStatus = dataSnapshot.child("status").getValue().toString();
@@ -108,6 +110,16 @@ public class RequestsFragment extends Fragment {
                                                 holder.userName.setText(requestUserName);
                                                 holder.userStatus.setText(requestUserStatus);
 
+                                                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View view) {
+                                                        Intent profileIntent = new Intent(getContext(), ProfileActivity.class);
+                                                        profileIntent.putExtra("visit_user_id",list_user_id);
+                                                        profileIntent.putExtra("visit_user_name", requestUserName);
+                                                        profileIntent.putExtra("visit_image", requestProfileImage[0]);
+                                                        startActivity(profileIntent);
+                                                    }
+                                                });
 
                                                 holder.AcceptButton.setOnClickListener(new View.OnClickListener() {
                                                     @Override
