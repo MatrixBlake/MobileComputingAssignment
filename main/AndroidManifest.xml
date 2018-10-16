@@ -43,7 +43,9 @@
         <activity
             android:name=".CreateGroupActivity"
             android:parentActivityName=".MainActivity" />
-        <activity android:name=".PostsActivity" />
+        <activity
+            android:name=".PostsActivity"
+            android:parentActivityName=".MainActivity" />
         <activity android:name=".EditPostActivity" />
         <activity android:name=".CommentPostActivity"></activity>
     </application>
