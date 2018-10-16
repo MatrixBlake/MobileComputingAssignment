@@ -62,7 +62,6 @@ public class PostsActivity extends AppCompatActivity {
         postlist=(RecyclerView)findViewById(R.id.all_users_post_list);
         postlist.setLayoutManager(new LinearLayoutManager(this));
         /*postlist.setHasFixedSize(true);
-
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setReverseLayout(true);
         linearLayoutManager.setStackFromEnd(true);
@@ -94,61 +93,61 @@ public class PostsActivity extends AppCompatActivity {
                         .build();
         FirebaseRecyclerAdapter<Posts,PostViewHolder> adapter=
                 new FirebaseRecyclerAdapter<Posts, PostViewHolder>(options) {
-            @Override
-            protected void onBindViewHolder(@NonNull PostViewHolder holder, int position, @NonNull final Posts model) {
-
-                holder.name.setText(model.getName());
-                holder.date.setText(model.getDate()+" "+model.getTime());
-                holder.description.setText(model.getDescription());
-                if(model.getImage()!=null){
-                    Picasso.get().load(model.getImage()).into(holder.image);
-                }
-
-                holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
-                    public boolean onLongClick(View v) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(PostsActivity.this,R.style.AlertDialog);
-                        builder.setTitle("Report");
-                        builder.setMessage("Do you want to report this post?");
-                        builder.setNegativeButton("Report", new DialogInterface.OnClickListener() {
+                    protected void onBindViewHolder(@NonNull PostViewHolder holder, int position, @NonNull final Posts model) {
+
+                        holder.name.setText(model.getName());
+                        holder.date.setText(model.getDate()+" "+model.getTime());
+                        holder.description.setText(model.getDescription());
+                        if(model.getImage()!=null){
+                            Picasso.get().load(model.getImage()).into(holder.image);
+                        }
+
+                        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Toast.makeText(PostsActivity.this, "Reported!", Toast.LENGTH_SHORT).show();
-                                PostsRef.child(model.getPostid()).child("reported").setValue("1");
+                            public boolean onLongClick(View v) {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(PostsActivity.this,R.style.AlertDialog);
+                                builder.setTitle("Report");
+                                builder.setMessage("Do you want to report this post?");
+                                builder.setNegativeButton("Report", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Toast.makeText(PostsActivity.this, "Reported!", Toast.LENGTH_SHORT).show();
+                                        PostsRef.child(model.getPostid()).child("reported").setValue("1");
+                                    }
+                                });
+
+                                builder.setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
+                                    }
+                                });
+
+                                builder.show();
+
+                                return true;
                             }
                         });
 
-                        builder.setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
+                        holder.itemView.setOnClickListener(new View.OnClickListener() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
+                            public void onClick(View v) {
+                                SendUserToCommentPostActivity(model.getPostid());
                             }
                         });
-
-                        builder.show();
-
-                        return true;
                     }
-                });
 
-                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @NonNull
                     @Override
-                    public void onClick(View v) {
-                        SendUserToCommentPostActivity(model.getPostid());
-                    }
-                });
-            }
-
-                        @NonNull
-                        @Override
-          public PostViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.single_post,parent,false);
-                            // View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.single_post,parent,false);
-                  PostViewHolder viewHolder = new PostViewHolder(view);
-                  return viewHolder;
-                 }};
-      postlist.setAdapter(adapter);
-      adapter.startListening();
+                    public PostViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                        View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.single_post,parent,false);
+                        // View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.single_post,parent,false);
+                        PostViewHolder viewHolder = new PostViewHolder(view);
+                        return viewHolder;
+                    }};
+        postlist.setAdapter(adapter);
+        adapter.startListening();
 
     }
 
@@ -170,7 +169,7 @@ public class PostsActivity extends AppCompatActivity {
 
             name=itemView.findViewById(R.id.post_user_name);
             date=itemView.findViewById(R.id.post_date);
-           // time=itemView.findViewById(R.id.post_time);
+            // time=itemView.findViewById(R.id.post_time);
             description=itemView.findViewById(R.id.post_descriptions);
             image=itemView.findViewById(R.id.post_display_image);
 

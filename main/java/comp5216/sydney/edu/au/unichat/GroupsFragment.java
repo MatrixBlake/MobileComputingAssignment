@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -39,6 +40,7 @@ public class GroupsFragment extends Fragment {
     private FirebaseAuth mAuth;
 
     private String currentID;
+    ArrayList<String> groupKeys = new ArrayList<>();
 
 
     public GroupsFragment() {
@@ -64,7 +66,10 @@ public class GroupsFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String currentGroupName = parent.getItemAtPosition(position).toString();
                 Intent groupChatIntent = new Intent(getContext(),GroupChatActivity.class);
+                String currentGroupKey = groupKeys.get(position);
                 groupChatIntent.putExtra("groupName",currentGroupName);
+                groupChatIntent.putExtra("groupKey",currentGroupKey);
+                Toast.makeText(getContext(), currentGroupKey, Toast.LENGTH_SHORT).show();
                 startActivity(groupChatIntent);
             }
         });
@@ -81,19 +86,18 @@ public class GroupsFragment extends Fragment {
 
 
     private void RetrieveAndDisplayGroups() {
-        RootRef.child("Users").child(currentID).child("groups").orderByChild("in").equalTo("1").addValueEventListener(new ValueEventListener() {
+        RootRef.child("Users").child(currentID).child("groups").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Set<String> set = new HashSet<>();
-                Iterator iterator = dataSnapshot.getChildren().iterator();
-
-                while(iterator.hasNext()){
-
-                    set.add(((DataSnapshot)iterator.next()).getKey());
-                }
 
                 list_of_groups.clear();
-                list_of_groups.addAll(set);
+                for(DataSnapshot data : dataSnapshot.getChildren()){
+                    groupKeys.add(data.getKey());
+                    String thisGroupNameLong = data.getValue().toString();
+                    String thisGroupName = thisGroupNameLong.substring(1,thisGroupNameLong.length()-4);
+                    list_of_groups.add(thisGroupName);
+                }
+
                 arrayAdapter.notifyDataSetChanged();
             }
 

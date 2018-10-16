@@ -3,9 +3,9 @@ package comp5216.sydney.edu.au.unichat;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Message;
-import android.provider.ContactsContract;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
@@ -15,6 +15,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -39,7 +40,12 @@ import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -75,6 +81,8 @@ public class ChatActivity extends AppCompatActivity {
     private ProgressDialog loadingBar;
     private File compressedImage;
     private String currentID;
+    private ChildEventListener eventListener;
+    Bitmap newMap;
 
 
     @Override
@@ -92,7 +100,7 @@ public class ChatActivity extends AppCompatActivity {
         messageReceiverName = getIntent().getExtras().get("visit_user_name").toString();
         messageReceiverImage = getIntent().getExtras().get("visit_image").toString();
 
-        IntializeControllers();
+        InitializeControllers();
 
         userName.setText(messageReceiverName);
         Picasso.get().load(messageReceiverImage).placeholder(R.drawable.profile_image).into(userImage);
@@ -114,7 +122,7 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
-    private void IntializeControllers() {
+    private void InitializeControllers() {
 
         ChatToolBar=(Toolbar)findViewById(R.id.chat_toolbar);
 
@@ -143,44 +151,58 @@ public class ChatActivity extends AppCompatActivity {
 
         loadingBar= new ProgressDialog(this);
 
+         eventListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                Messages messages = dataSnapshot.getValue(Messages.class);
 
+                messagesList.add(messages);
+
+                messageAdapter.notifyDataSetChanged();
+
+                userMessagesList.smoothScrollToPosition(userMessagesList.getAdapter().getItemCount());
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        messagesList.clear();
+        RootRef.child("Messages").child(messageSenderID).child(messageReceiverID).removeEventListener(eventListener);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        messagesList.clear();
+
+        //messageAdapter = new MessageAdapter(messagesList);
+
 
         RootRef.child("Messages").child(messageSenderID).child(messageReceiverID)
-                .addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                        Messages messages = dataSnapshot.getValue(Messages.class);
-                        messagesList.add(messages);
-                        messageAdapter.notifyDataSetChanged();
-                        userMessagesList.smoothScrollToPosition(userMessagesList.getAdapter().getItemCount());
-                    }
-
-                    @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                    }
-
-                    @Override
-                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                    }
-
-                    @Override
-                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
+                .addChildEventListener(eventListener);
     }
 
     private void SendMessage(){
@@ -236,6 +258,9 @@ public class ChatActivity extends AppCompatActivity {
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
 
+
+
+
             if (resultCode == RESULT_OK) {
 
                 loadingBar.setTitle("Send Image");
@@ -252,12 +277,12 @@ public class ChatActivity extends AppCompatActivity {
                 Uri resultUri2 = Uri.fromFile(new File(compressedImage.getAbsolutePath()));
 
 
-                Calendar calFordDate = Calendar.getInstance();
-                SimpleDateFormat currentDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-                String imageCurrentTime = currentDate.format(calFordDate.getTime());
+                Date date = new Date();
+                final String imageID =  Long.toString(date.getTime());
 
+                filePath = userChatImgRef.child(imageID + ".jpg");
 
-                filePath = userChatImgRef.child(imageCurrentTime + ".jpg");
+                saveImage(resultUri2, imageID);
 
                 filePath.putFile(resultUri2).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                     @Override
@@ -271,6 +296,7 @@ public class ChatActivity extends AppCompatActivity {
                                     messageImageBody.put("type", "image");
                                     messageImageBody.put("from", messageSenderID);
                                     messageImageBody.put("message", "[image]");
+                                    messageImageBody.put("imageID",imageID);
 
                                     String messageSenderRef = "Messages/" + messageSenderID + "/" + messageReceiverID;
                                     String messageReceiverRef = "Messages/" + messageReceiverID + "/" + messageSenderID;
@@ -287,6 +313,7 @@ public class ChatActivity extends AppCompatActivity {
                                     messageReceiver = RootRef.child("Contacts").child(messageReceiverID).child(messageSenderID);
                                     messageSender.child("LastTime").setValue(-date.getTime());
                                     messageReceiver.child("LastTime").setValue(-date.getTime());
+
                                     RootRef.updateChildren(messageBodyDetails).addOnCompleteListener(new OnCompleteListener() {
                                         @Override
                                         public void onComplete(@NonNull Task task) {
@@ -303,6 +330,7 @@ public class ChatActivity extends AppCompatActivity {
 
 
                             });
+
                         } else {
                             String message = task.getException().toString();
                             Toast.makeText(ChatActivity.this, "Error:" + message, Toast.LENGTH_SHORT).show();
@@ -313,4 +341,43 @@ public class ChatActivity extends AppCompatActivity {
             }
         }
     }
+
+    private void saveImage(Uri resultUri2, String imageID) {
+
+        File folder = new File(Environment.getExternalStorageDirectory() + "/Unichat/images/");
+        boolean success = true;
+        if (!folder.exists()) {
+            success = folder.mkdirs();
+        }
+        if (success) {
+            String sourceFilename= resultUri2.getPath();
+            String destinationFilename = android.os.Environment.getExternalStorageDirectory().getPath()+"/Unichat/images/"+imageID+".jpg";
+
+            BufferedInputStream bis = null;
+            BufferedOutputStream bos = null;
+
+            try {
+                bis = new BufferedInputStream(new FileInputStream(sourceFilename));
+                bos = new BufferedOutputStream(new FileOutputStream(destinationFilename, false));
+                byte[] buf = new byte[1024];
+                bis.read(buf);
+                do {
+                    bos.write(buf);
+                } while(bis.read(buf) != -1);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (bis != null) bis.close();
+                    if (bos != null) bos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+
+    }
+
 }

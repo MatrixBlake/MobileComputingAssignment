@@ -185,17 +185,7 @@ public class CommentPostActivity extends AppCompatActivity {
                 for(DataSnapshot data : dataSnapshot.getChildren()){
                     list_of_comments.add(data.getKey());
                 }
-//                Iterator iterator = dataSnapshot.getChildren().iterator();
-//
-//                while(iterator.hasNext()){
-//
-//                    set.add(((DataSnapshot)iterator.next()).getKey());
-//                }
-//
-//
-//
-//                list_of_comments.addAll(set);
-                //Collections.reverse(list_of_comments);
+
                 arrayAdapter.notifyDataSetChanged();
             }
 

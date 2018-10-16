@@ -1,5 +1,7 @@
 package comp5216.sydney.edu.au.unichat;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -17,9 +19,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
 
@@ -33,18 +38,18 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
 
     public class MessageViewHolder extends RecyclerView.ViewHolder{
-        public TextView senderMessageText, recevierMessageText;
+        public TextView senderMessageText, receiverMessageText;
         public CircleImageView receiverProfileImage;
-        public ImageView senderImage, recevierImage;
+        public ImageView senderImage, receiverImage;
 
         public MessageViewHolder(View itemView) {
             super(itemView);
 
             senderMessageText = (TextView) itemView.findViewById(R.id.sender_message_text);
-            recevierMessageText = (TextView) itemView.findViewById(R.id.receiver_message_text);
+            receiverMessageText = (TextView) itemView.findViewById(R.id.receiver_message_text);
             receiverProfileImage = (CircleImageView) itemView.findViewById(R.id.message_profile_image);
             senderImage=(ImageView)itemView.findViewById(R.id.sender_message_image);
-            recevierImage=(ImageView)itemView.findViewById(R.id.receiver_message_image);
+            receiverImage =(ImageView)itemView.findViewById(R.id.receiver_message_image);
         }
     }
 
@@ -87,9 +92,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         });
 
         if(fromMessageType.equals("text")){
-            holder.recevierMessageText.setVisibility(View.INVISIBLE);
+            holder.receiverMessageText.setVisibility(View.INVISIBLE);
             holder.receiverProfileImage.setVisibility(View.INVISIBLE);
             holder.senderMessageText.setVisibility(View.INVISIBLE);
+            holder.senderImage.setVisibility(View.INVISIBLE);
+            holder.receiverImage.setVisibility(View.INVISIBLE);
+            holder.senderImage.getLayoutParams().height = 0;
+            holder.receiverImage.getLayoutParams().height = 0;
 
             if(fromUserID.equals(messageSenderId)){
                 holder.senderMessageText.setVisibility(View.VISIBLE);
@@ -98,29 +107,50 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                 holder.senderMessageText.setText(messages.getMessage());
             }else{
                 holder.receiverProfileImage.setVisibility(View.VISIBLE);
-                holder.recevierMessageText.setVisibility(View.VISIBLE);
+                holder.receiverMessageText.setVisibility(View.VISIBLE);
 
-                holder.recevierMessageText.setBackgroundResource(R.drawable.receiver_messages_layout);
-                holder.recevierMessageText.setTextColor(Color.BLACK);
-                holder.recevierMessageText.setText(messages.getMessage());
+                holder.receiverMessageText.setBackgroundResource(R.drawable.receiver_messages_layout);
+                holder.receiverMessageText.setTextColor(Color.BLACK);
+                holder.receiverMessageText.setText(messages.getMessage());
             }
-        }
-        if(fromMessageType.equals("image")){
-            holder.recevierMessageText.setVisibility(View.INVISIBLE);
+        } else{
+            holder.receiverMessageText.setVisibility(View.INVISIBLE);
             holder.receiverProfileImage.setVisibility(View.INVISIBLE);
             holder.senderMessageText.setVisibility(View.INVISIBLE);
+            holder.senderImage.setVisibility(View.INVISIBLE);
+            holder.receiverImage.setVisibility(View.INVISIBLE);
+            holder.senderImage.getLayoutParams().height = WRAP_CONTENT;
+            holder.receiverImage.getLayoutParams().height = WRAP_CONTENT;
+            holder.senderImage.setMaxHeight(750);
+            holder.receiverImage.setMaxHeight(750);
+
+            String imageID=messages.getImageID();
+
             if(fromUserID.equals(messageSenderId)){
                 holder.senderImage.setVisibility(View.VISIBLE);
-                //holder.senderImage.setBackgroundResource(R.drawable.sender_messages_layout);
-                //holder.senderImage.setTextColor(Color.BLACK);
-                Picasso.get().load(messages.getImage()).into(holder.senderImage);
+
+                File imgFile = new  File(android.os.Environment.getExternalStorageDirectory().getPath()+"/Unichat/images/"+imageID+".jpg");
+                if(imgFile.exists()){
+                    Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                    holder.senderImage.setImageBitmap(myBitmap);
+                }else{
+                    Picasso.get().load(messages.getImage()).into(holder.senderImage);
+                }
+
+
             }else{
                 holder.receiverProfileImage.setVisibility(View.VISIBLE);
-                holder.recevierImage.setVisibility(View.VISIBLE);
+                holder.receiverImage.setVisibility(View.VISIBLE);
 
-               // holder.recevierImage.setBackgroundResource(R.drawable.receiver_messages_layout);
-               // holder.recevierImage.setTextColor(Color.BLACK);
-                Picasso.get().load(messages.getImage()).into(holder.recevierImage);
+                File imgFile = new  File(android.os.Environment.getExternalStorageDirectory().getPath()+"/Unichat/images/"+imageID+".jpg");
+                if(imgFile.exists()){
+                    Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                    holder.receiverImage.setImageBitmap(myBitmap);
+                }else{
+                    Picasso.get().load(messages.getImage()).into(holder.receiverImage);
+                }
+
+
             }
         }
 

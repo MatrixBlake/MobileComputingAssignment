@@ -37,11 +37,15 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference RootRef;
 
+    private String currentUserName;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
 
         mAuth=FirebaseAuth.getInstance();
         currentUser=mAuth.getCurrentUser();
@@ -133,11 +137,29 @@ public class MainActivity extends AppCompatActivity {
         builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String groupName = groupNameField.getText().toString();
+                final String groupName = groupNameField.getText().toString();
                 if(TextUtils.isEmpty(groupName)){
                     Toast.makeText(MainActivity.this, "Please write Group Name", Toast.LENGTH_SHORT).show();
                 }else{
-                    CreateNewGroup(groupName);
+                    RootRef.child("Users").child(mAuth.getUid()).child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.exists()){
+                                currentUserName=dataSnapshot.getValue().toString();
+                                DatabaseReference groupKeyRef = RootRef.child("Groups").push();
+                                groupKeyRef.child("groupName").setValue(groupName);
+                                RootRef.child("Groups").child(groupKeyRef.getKey()).child("people").child(currentUserName).setValue("in");
+                                RootRef.child("Users").child(currentUser.getUid()).child("groups").child(groupKeyRef.getKey()).child(groupName).setValue("in");
+                                SendUserToCreateGroupActivity(groupKeyRef.getKey(),groupName);
+
+                            }
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
                 }
             }
         });
@@ -152,43 +174,10 @@ public class MainActivity extends AppCompatActivity {
         builder.show();
     }
 
-    private void CreateNewGroup(final String groupName) {
-        RootRef.child("Groups").child(groupName).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(!dataSnapshot.exists()){
 
-                    RootRef.child("Groups").child(groupName).setValue("")
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if(task.isSuccessful()){
-                                        RootRef.child("Users").child(currentUser.getUid()).child("groups").child(groupName).child("in").setValue("1")
-                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                    @Override
-                                                    public void onComplete(@NonNull Task<Void> task) {
-                                                        SendUserToCreateGroupActivity(groupName);
-                                                    }
-                                                });
-                                    }
-                                }
-                            });
-                }else{
-                    Toast.makeText(MainActivity.this, groupName+" already created!", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-
-    }
-
-    private void SendUserToCreateGroupActivity(String groupName) {
+    private void SendUserToCreateGroupActivity(String groupKey, String groupName) {
         Intent createGroupIntent = new Intent(MainActivity.this,CreateGroupActivity.class);
+        createGroupIntent.putExtra("GroupKey",groupKey);
         createGroupIntent.putExtra("GroupName",groupName);
         startActivity(createGroupIntent);
     }
