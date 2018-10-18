@@ -34,14 +34,6 @@
                     android:textAlignment="textStart"
                     android:textSize="20sp"
                     android:textStyle="bold"/>
-
-                <ImageView
-                    android:id="@+id/user_online_status2"
-                    android:layout_width="18dp"
-                    android:layout_height="18dp"
-                    android:layout_marginTop="5dp"
-                    android:src="@drawable/online"
-                    android:visibility="invisible"/>
             </LinearLayout>
             <TextView
                 android:id="@+id/user_status2"

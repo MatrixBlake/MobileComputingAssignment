@@ -31,12 +31,14 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
         android:layout_marginTop="100dp"
         android:background="@drawable/inputs"
         android:ems="18"
         android:hint="Post something..."
         android:inputType="textMultiLine"
-        tools:padding="15dp" />
+        android:padding="10dp" />
 
     <ImageView
         android:id="@+id/edit_post_image"
@@ -44,7 +46,7 @@
         android:layout_height="wrap_content"
         android:maxHeight="200dp"
         android:layout_below="@id/post_description"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="60dp"
         android:layout_centerHorizontal="true"
         android:src="@drawable/post_upload_image"/>
 
@@ -57,7 +59,8 @@
         android:layout_marginBottom="23dp"
         android:background="@drawable/buttons"
         android:padding="10dp"
-        android:text="Update Post"
+        android:text="Create Post"
+        android:textAllCaps="false"
         android:textColor="@android:color/white"
         android:textSize="18sp" />
 

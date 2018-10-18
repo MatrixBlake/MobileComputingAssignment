@@ -98,7 +98,7 @@ public class EditPostActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        getSupportActionBar().setTitle("update Post");
+        getSupportActionBar().setTitle("Create Post");
 
 
         uploadPostImageButton.setOnClickListener(new View.OnClickListener() {

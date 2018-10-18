@@ -21,6 +21,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 public class LoginActivity extends AppCompatActivity {
 
 
@@ -76,14 +79,23 @@ public class LoginActivity extends AppCompatActivity {
             loadingBar.setCanceledOnTouchOutside(true);
             loadingBar.show();
 
-            mAuth.signInWithEmailAndPassword(email,password)
+            String newPassword=password;
+         //   newPassword = md5(password+email);
+
+            mAuth.signInWithEmailAndPassword(email,newPassword)
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if(task.isSuccessful()){
-                                SendUserToMainActivity();
-                                Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                                loadingBar.dismiss();
+                                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                               // if(user.isEmailVerified()==true){
+                                    SendUserToMainActivity();
+                                    Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
+                                    loadingBar.dismiss();
+                              //  }else{
+                            //        Toast.makeText(LoginActivity.this, "Please verify the e-mail", Toast.LENGTH_SHORT).show();
+                             //       loadingBar.dismiss();
+                               // }
                             }else{
                                 String message =task.getException().toString();
                                 Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
@@ -113,5 +125,22 @@ public class LoginActivity extends AppCompatActivity {
     private void SendUserToRegisterActivity() {
         Intent registerIntent =new Intent(LoginActivity.this,RegisterActivity.class);
         startActivity(registerIntent);
+    }
+
+    public String md5(String s) {
+        try {
+            MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
+            digest.update(s.getBytes());
+            byte messageDigest[] = digest.digest();
+
+            StringBuffer hexString = new StringBuffer();
+            for (int i=0; i<messageDigest.length; i++)
+                hexString.append(Integer.toHexString(0xFF & messageDigest[i]));
+            return hexString.toString();
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 }

@@ -43,7 +43,7 @@
                 android:layout_marginLeft="5dp"
                 android:textAlignment="textStart"
                 android:textSize="16sp"
-                android:text="123123123"
+                android:text="Last message:"
                 />
             
 

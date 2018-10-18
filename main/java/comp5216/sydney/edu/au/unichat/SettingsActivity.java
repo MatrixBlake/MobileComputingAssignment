@@ -81,6 +81,8 @@ public class SettingsActivity extends AppCompatActivity {
         RootRef = FirebaseDatabase.getInstance().getReference();
         UserProfileImagesRef=FirebaseStorage.getInstance().getReference().child("Profile Images");
 
+        //RootRef.child("Users").child(currentUserID).child("uid").setValue(currentUserID);
+
 
         InitializeFields();
 
@@ -97,6 +99,7 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 AddCourses();
+                UpdateSettingsFake();
             }
         });
 
@@ -212,6 +215,24 @@ public class SettingsActivity extends AppCompatActivity {
 
     }
 
+    private void UpdateSettingsFake() {
+        String setUserName=userName.getText().toString();
+        String setUserStatus=userStatus.getText().toString();
+        if(downloadUrl==null){
+            downloadUrl=retrieveProfileImage;
+        }
+
+        if(TextUtils.isEmpty(setUserName)){
+            Toast.makeText(this, "Please write your user name first...", Toast.LENGTH_SHORT).show();
+        }else if(TextUtils.isEmpty(setUserStatus)){
+            Toast.makeText(this, "Please write your user status...", Toast.LENGTH_SHORT).show();
+        }else{
+            RootRef.child("Users").child(currentUserID).child("name").setValue(setUserName);
+            RootRef.child("Users").child(currentUserID).child("status").setValue(setUserStatus);
+            RootRef.child("Users").child(currentUserID).child("image").setValue(downloadUrl);
+        }
+    }
+
     private void UpdateSettings() {
         String setUserName=userName.getText().toString();
         String setUserStatus=userStatus.getText().toString();
@@ -222,7 +243,7 @@ public class SettingsActivity extends AppCompatActivity {
         if(TextUtils.isEmpty(setUserName)){
             Toast.makeText(this, "Please write your user name first...", Toast.LENGTH_SHORT).show();
         }else if(TextUtils.isEmpty(setUserStatus)){
-            Toast.makeText(this, "Please write your user name status...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please write your user status...", Toast.LENGTH_SHORT).show();
         }else{
             RootRef.child("Users").child(currentUserID).child("name").setValue(setUserName);
             RootRef.child("Users").child(currentUserID).child("status").setValue(setUserStatus);
@@ -278,13 +299,16 @@ public class SettingsActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if(dataSnapshot.exists() && dataSnapshot.hasChild("name") && dataSnapshot.hasChild("image")){
-                            String retrieveUserName = dataSnapshot.child("name").getValue().toString();
-                            String retrieveStatus = dataSnapshot.child("status").getValue().toString();
-                            retrieveProfileImage = dataSnapshot.child("image").getValue().toString();
-                            imageID = dataSnapshot.child("imageID").getValue().toString();
+                            try{
+                                String retrieveUserName = dataSnapshot.child("name").getValue().toString();
+                                String retrieveStatus = dataSnapshot.child("status").getValue().toString();
+                                retrieveProfileImage = dataSnapshot.child("image").getValue().toString();
+                                imageID = dataSnapshot.child("imageID").getValue().toString();
+                                userName.setText(retrieveUserName);
+                                userStatus.setText(retrieveStatus);
+                            }catch (Exception e){}
 
-                            userName.setText(retrieveUserName);
-                            userStatus.setText(retrieveStatus);
+
 
                             File imgFile = new  File(android.os.Environment.getExternalStorageDirectory().getPath()+"/Unichat/images/"+imageID+".jpg");
                             if(imgFile.exists()){

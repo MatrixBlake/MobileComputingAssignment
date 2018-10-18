@@ -16,9 +16,13 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -28,6 +32,7 @@ public class RegisterActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference RootRef;
     private ProgressDialog loadingBar;
+    String pattern = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,16}$";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,35 +71,61 @@ public class RegisterActivity extends AppCompatActivity {
             Toast.makeText(RegisterActivity.this,"Please enter password...",Toast.LENGTH_SHORT).show();
         }
         else{
-            loadingBar.setTitle("Creating New Account");
-            loadingBar.setMessage("Please wart, while we are creating new account for you...");
-            loadingBar.setCanceledOnTouchOutside(true);
-            loadingBar.show();
+            if(!email.endsWith(".sydney.edu.au")){
+                Toast.makeText(RegisterActivity.this,"Please enter Sydney students or staff email!",Toast.LENGTH_SHORT).show();
+            }else if(!password.matches(pattern)){
+                Toast.makeText(this, "The length of password should between 6 to 16 and has at least one number and one character.", Toast.LENGTH_SHORT).show();
+            } else {
 
-            mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    if(task.isSuccessful()){
-                        String deviceToken = FirebaseInstanceId.getInstance().getToken();
+                loadingBar.setTitle("Creating New Account");
+                loadingBar.setMessage("Please wart, while we are creating new account for you...");
+                loadingBar.setCanceledOnTouchOutside(true);
+                loadingBar.show();
 
-                        String currentUserID=mAuth.getCurrentUser().getUid();
-                        RootRef.child("Users").child(currentUserID).setValue("");
+                String newPassword=md5(password+email);
 
-                        RootRef.child("Users").child(currentUserID).child("device_token")
-                                .setValue(deviceToken);
+                mAuth.createUserWithEmailAndPassword(email, newPassword).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
 
-                        SendUserToMainActivity();
-                        Toast.makeText(RegisterActivity.this, "Account Created Successfully...", Toast.LENGTH_SHORT).show();
-                        loadingBar.dismiss();
-                    }else{
-                        String message =task.getException().toString();
-                        Toast.makeText(RegisterActivity.this, message, Toast.LENGTH_SHORT).show();
-                        loadingBar.dismiss();
+
+                            String currentUserID = mAuth.getCurrentUser().getUid();
+                            RootRef.child("Users").child(currentUserID).child("uid").setValue(currentUserID);
+
+                            //sendVerificationEmail();
+
+                            SendUserToLoginActivity();
+                            Toast.makeText(RegisterActivity.this, "Account Created Successfully...", Toast.LENGTH_SHORT).show();
+                            loadingBar.dismiss();
+                        } else {
+                            String message = task.getException().toString();
+                            Toast.makeText(RegisterActivity.this, message, Toast.LENGTH_SHORT).show();
+                            loadingBar.dismiss();
+                        }
                     }
-                }
-            });
+                });
+            }
         }
     }
+
+    public void sendVerificationEmail() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user != null) {
+            user.sendEmailVerification()
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(RegisterActivity.this, "Verification email sent", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+        }
+
+    }
+
 
 
 
@@ -112,10 +143,21 @@ public class RegisterActivity extends AppCompatActivity {
         startActivity(loginIntent);
     }
 
-    private void SendUserToMainActivity() {
-        Intent mainIntent =new Intent(RegisterActivity.this,MainActivity.class);
-        mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(mainIntent);
-        finish();
+
+    public String md5(String s) {
+        try {
+            MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
+            digest.update(s.getBytes());
+            byte messageDigest[] = digest.digest();
+
+            StringBuffer hexString = new StringBuffer();
+            for (int i=0; i<messageDigest.length; i++)
+                hexString.append(Integer.toHexString(0xFF & messageDigest[i]));
+            return hexString.toString();
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 }
