@@ -7,7 +7,7 @@
     tools:context=".CommentPostActivity">
 
     <include android:id="@+id/comment_post_toolbar"
-        layout="@layout/app_bar_layout"></include>
+        layout="@layout/app_bar_layout_comment_post"></include>
 
 
 
@@ -16,11 +16,11 @@
         android:layout_below="@id/comment_post_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="1dp"
-        android:layout_marginTop="1dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
         android:textAlignment="textStart"
         android:textColor="@android:color/black"
-        android:textSize="16sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         android:text="UserName" />
 
@@ -29,12 +29,12 @@
         android:layout_below="@id/comment_post_user_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="3dp"
+        android:layout_marginLeft="10dp"
         android:layout_marginRight="3dp"
         android:padding="1dp"
         android:text="Post Description"
         android:textColor="@android:color/black"
-        android:textSize="14sp"
+        android:textSize="16sp"
         />
 
     <ImageView
@@ -43,6 +43,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
+        android:layout_marginLeft="10dp"
         android:maxHeight="200dp"
         />
 
@@ -52,45 +53,31 @@
         android:layout_below="@id/comment_post_display_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="3dp"
         android:text="Date"
         android:textColor="@android:color/darker_gray"
         android:textSize="13sp"
         android:textStyle="bold"
         android:textAlignment="center"/>
 
+    <TextView
+        android:id="@+id/word_comments"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:text="Comments:"
+        android:textColor="#000000"
+        android:textSize="18sp"
+        android:layout_below="@+id/comment_post_date"/>
+
 
     <ListView
         android:id="@+id/comment_post_comments"
-        android:layout_below="@id/comment_post_date"
-        android:layout_above="@id/comment_post_input_message"
+        android:layout_below="@id/word_comments"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"></ListView>
-
-    <EditText
-        android:id="@+id/comment_post_input_message"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="type message here"
-        android:layout_alignParentBottom="true"
-        android:padding="15dp"
-        android:layout_toStartOf="@id/comment_post_send_comment"
-        android:layout_alignParentStart="true"/>
-
-    <ImageButton
-        android:id="@+id/comment_post_send_comment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/send_message"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"/>
-
-
-
-
-
-
-
-
 
 
 </RelativeLayout>

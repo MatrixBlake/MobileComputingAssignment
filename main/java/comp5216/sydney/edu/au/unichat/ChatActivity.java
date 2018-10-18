@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -60,7 +61,7 @@ import id.zelory.compressor.Compressor;
 
 public class ChatActivity extends AppCompatActivity {
 
-    private String messageReceiverID, messageReceiverName, messageReceiverImage, messageSenderID, currentDate, currentTime;
+    private String messageReceiverID, messageReceiverName, messageReceiverImage, messageSenderID, messageReceiverImageID, currentDate, currentTime;
 
     private TextView userName, userLastSeen;
     private CircleImageView userImage;
@@ -100,11 +101,19 @@ public class ChatActivity extends AppCompatActivity {
         messageReceiverID = getIntent().getExtras().get("visit_user_id").toString();
         messageReceiverName = getIntent().getExtras().get("visit_user_name").toString();
         messageReceiverImage = getIntent().getExtras().get("visit_image").toString();
+        messageReceiverImageID = getIntent().getExtras().get("visit_image_id").toString();
 
         InitializeControllers();
 
         userName.setText(messageReceiverName);
-        Picasso.get().load(messageReceiverImage).placeholder(R.drawable.profile_image).into(userImage);
+        File imgFile = new File(android.os.Environment.getExternalStorageDirectory().getPath()+"/Unichat/images/"+messageReceiverImageID+".jpg");
+        if(!imgFile.exists()){
+            Picasso.get().load(messageReceiverImage).placeholder(R.drawable.profile_image).into(userImage);
+        }else {
+            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+            userImage.setImageBitmap(myBitmap);
+        }
+
 
         SendMessageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -272,7 +281,7 @@ public class ChatActivity extends AppCompatActivity {
                 Uri resultUri = result.getUri();
 
                 try {
-                    compressedImage = new Compressor(this).setQuality(75).compressToFile(FileUtil.from(this, resultUri));
+                    compressedImage = new Compressor(this).setMaxWidth(200).setQuality(75).compressToFile(FileUtil.from(this, resultUri));
                 } catch (Exception e) {
                 }
                 Uri resultUri2 = Uri.fromFile(new File(compressedImage.getAbsolutePath()));

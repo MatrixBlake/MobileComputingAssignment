@@ -2,6 +2,9 @@ package comp5216.sydney.edu.au.unichat;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -30,6 +33,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class PostsActivity extends AppCompatActivity {
 
@@ -109,7 +117,31 @@ public class PostsActivity extends AppCompatActivity {
                         holder.date.setText(model.getDate()+" "+model.getTime());
                         holder.description.setText(model.getDescription());
                         if(model.getImage()!=null){
-                            Picasso.get().load(model.getImage()).into(holder.image);
+                            final String imageID = model.getImageID();
+
+
+                            File imgFile = new  File(android.os.Environment.getExternalStorageDirectory().getPath()+"/Unichat/images/"+imageID+".jpg");
+                            if(imgFile.exists()){
+                                Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                                holder.image.setImageBitmap(myBitmap);
+                            }else{
+                                Picasso.get().load(model.getImage()).into(holder.image, new com.squareup.picasso.Callback(){
+
+                                    @Override
+                                    public void onSuccess() {
+                                        Picasso.get()
+                                                .load(model.getImage())
+                                                .into(picassoImageTarget(imageID));
+                                    }
+
+                                    @Override
+                                    public void onError(Exception e) {
+
+                                    }
+                                });
+
+                            }
+
                         }
 
                         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -191,5 +223,46 @@ public class PostsActivity extends AppCompatActivity {
 
         Intent addNewPostIntent= new Intent(PostsActivity.this,EditPostActivity.class);
         startActivity(addNewPostIntent);
+    }
+
+    private Target picassoImageTarget(final String imageName) {
+        final File directory = new File(android.os.Environment.getExternalStorageDirectory().getPath()+"/Unichat/images/");
+        return new Target() {
+            @Override
+            public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final File myImageFile = new File(directory, imageName+".jpg"); // Create image file
+                        FileOutputStream fos = null;
+                        try {
+                            fos = new FileOutputStream(myImageFile);
+                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } finally {
+                            try {
+                                fos.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        Log.i("image", "image saved to >>>" + myImageFile.getAbsolutePath());
+                    }
+                }).start();
+
+            }
+
+            @Override
+            public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+
+
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+                if (placeHolderDrawable != null) {}
+            }
+        };
     }
 }

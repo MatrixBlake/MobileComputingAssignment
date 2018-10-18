@@ -51,12 +51,12 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class GroupChatActivity extends AppCompatActivity {
 
-    private String otherName, currentID, groupName, groupKey;
+    private String otherName, currentID, groupName, groupKey,groupType;
     private TextView groupNameTextView;
 
     private Toolbar GroupToolBar;
     private FirebaseAuth mAuth;
-    private DatabaseReference RootRef,GroupMessageKeyRef;
+    private DatabaseReference RootRef,GroupMessageKeyRef,GroupRef;
 
     private ImageButton SendMessageButton;
     private EditText MessageInputText;
@@ -78,8 +78,19 @@ public class GroupChatActivity extends AppCompatActivity {
         currentID = mAuth.getCurrentUser().getUid();
         RootRef = FirebaseDatabase.getInstance().getReference();
 
+
         groupName=getIntent().getExtras().get("groupName").toString();
         groupKey=getIntent().getExtras().get("groupKey").toString();
+        groupType=getIntent().getExtras().get("groupType").toString();
+
+
+
+        if(groupType.equals("normal")){
+            GroupRef=RootRef.child("Groups");
+        }else{
+            GroupRef=RootRef.child("CourseGroups");
+        }
+
 
 
         RootRef.child("Users").child(currentID).child("name").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -142,7 +153,10 @@ public class GroupChatActivity extends AppCompatActivity {
         messageAdapter = new GroupMessageAdapter(messagesList);
         userMessagesList = (RecyclerView)findViewById(R.id.group_private_messages_list_of_users);
         addNewBtn=findViewById(R.id.group_chat_add_memebers);
-        addNewBtn.setVisibility(View.VISIBLE);
+        if(groupType.equals("normal")){
+            addNewBtn.setVisibility(View.VISIBLE);
+        }
+
         linearLayoutManager = new LinearLayoutManager(this);
         userMessagesList.setLayoutManager(linearLayoutManager);
         userMessagesList.setAdapter(messageAdapter);
@@ -154,7 +168,8 @@ public class GroupChatActivity extends AppCompatActivity {
 
         messagesList.clear();
 
-        RootRef.child("Groups").child(groupKey).child("messages")
+
+        GroupRef.child(groupKey).child("messages")
                 .addChildEventListener(new ChildEventListener() {
                     @Override
                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
@@ -184,19 +199,22 @@ public class GroupChatActivity extends AppCompatActivity {
 
                     }
                 });
+
+
+
     }
 
     private void SendMessage(){
         String message = MessageInputText.getText().toString();
-        String messageKey = RootRef.child("Groups").child(groupKey).child("messages").push().getKey();
+        String messageKey = GroupRef.child(groupKey).child("messages").push().getKey();
         if(TextUtils.isEmpty(message)){
             Toast.makeText(this, "Please write message first...", Toast.LENGTH_SHORT).show();
         }else{
 
             HashMap<String,Object> groupMessageKey = new HashMap<>();
-            RootRef.child("Groups").child(groupName).updateChildren(groupMessageKey);
+            GroupRef.child(groupName).updateChildren(groupMessageKey);
 
-            GroupMessageKeyRef = RootRef.child("Groups").child(groupKey).child("messages").child(messageKey);
+            GroupMessageKeyRef = GroupRef.child(groupKey).child("messages").child(messageKey);
 
             HashMap<String,Object> messageInfoMap = new HashMap<>();
             messageInfoMap.put("fromName",fromName);

@@ -2,6 +2,8 @@ package comp5216.sydney.edu.au.unichat;
 
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -21,6 +23,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
+
+import java.io.File;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -82,11 +86,19 @@ public class ContactsFragment extends Fragment {
                             String userImage = dataSnapshot.child("image").getValue().toString();
                             String profileName = dataSnapshot.child("name").getValue().toString();
                             String profileStatus = dataSnapshot.child("status").getValue().toString();
+                            String userImageID = dataSnapshot.child("imageID").getValue().toString();
 
                             holder.userName.setText(profileName);
                             holder.userStatus.setText(profileStatus);
                             retImage[0] = dataSnapshot.child("image").getValue().toString();
-                            Picasso.get().load(userImage).placeholder(R.drawable.profile_image).into(holder.profileImage);
+
+                            File imgFile = new File(android.os.Environment.getExternalStorageDirectory().getPath()+"/Unichat/images/"+userImageID+".jpg");
+                            if(!imgFile.exists()){
+                                Picasso.get().load(userImage).placeholder(R.drawable.profile_image).into(holder.profileImage);
+                            }else {
+                                Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                                holder.profileImage.setImageBitmap(myBitmap);
+                            }
 
                         }else{
                             String profileName = dataSnapshot.child("name").getValue().toString();

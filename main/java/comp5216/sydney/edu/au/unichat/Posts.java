@@ -3,14 +3,14 @@ package comp5216.sydney.edu.au.unichat;
 public class Posts {
 
 
-    public String postid, uid, time, date, name, description, image;
+    public String postid, uid, time, date, name, description, image, imageID;
     public long lastTime;
     public Posts()
     {
 
     }
 
-    public Posts(String postid, String uid, String time, String date,  String description,  String name, String image, long lastTime) {
+    public Posts(String postid, String uid, String time, String date,  String description,  String name, String image, long lastTime, String imageID) {
         this.postid = postid;
         this.uid = uid;
         this.time = time;
@@ -19,6 +19,15 @@ public class Posts {
         this.name = name;
         this.image = image;
         this.lastTime = lastTime;
+        this.imageID = imageID;
+    }
+
+    public void setImageID(String imageID) {
+        this.imageID = imageID;
+    }
+
+    public String getImageID() {
+        return imageID;
     }
 
     public void setPostid(String postid) {

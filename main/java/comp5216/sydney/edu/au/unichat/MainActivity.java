@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
         builder.setTitle("Enter Group Name: ");
 
         final EditText groupNameField = new EditText(MainActivity.this);
-        groupNameField.setHint("e.g Coding Cafe");
+        groupNameField.setHint("e.g mobile assignment group");
         builder.setView(groupNameField);
 
 
@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
                                 DatabaseReference groupKeyRef = RootRef.child("Groups").push();
                                 groupKeyRef.child("groupName").setValue(groupName);
                                 RootRef.child("Groups").child(groupKeyRef.getKey()).child("people").child(currentUserName).setValue("in");
-                                RootRef.child("Users").child(currentUser.getUid()).child("groups").child(groupKeyRef.getKey()).child(groupName).setValue("in");
+                                RootRef.child("Users").child(currentUser.getUid()).child("groups").child(groupKeyRef.getKey()).child(groupName).setValue("normal");
                                 SendUserToCreateGroupActivity(groupKeyRef.getKey(),groupName);
 
                             }

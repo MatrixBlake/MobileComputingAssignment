@@ -1,6 +1,8 @@
 package comp5216.sydney.edu.au.unichat;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -22,6 +24,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.HashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -85,8 +88,15 @@ public class ProfileActivity extends AppCompatActivity {
                     String userImage = dataSnapshot.child("image").getValue().toString();
                     String userName = dataSnapshot.child("name").getValue().toString();
                     String userStatus = dataSnapshot.child("status").getValue().toString();
+                    String userImageID = dataSnapshot.child("imageID").getValue().toString();
 
-                    Picasso.get().load(userImage).placeholder(R.drawable.profile_image).into(userProfileImage);
+                    File imgFile = new File(android.os.Environment.getExternalStorageDirectory().getPath()+"/Unichat/images/"+userImageID+".jpg");
+                    if(!imgFile.exists()){
+                        Picasso.get().load(userImage).placeholder(R.drawable.profile_image).into(userProfileImage);
+                    }else {
+                        Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                        userProfileImage.setImageBitmap(myBitmap);
+                    }
                     userProfileName.setText(userName);
                     userProfileStatus.setText(userStatus);
 

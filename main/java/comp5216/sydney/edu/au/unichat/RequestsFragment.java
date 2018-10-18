@@ -4,11 +4,15 @@ package comp5216.sydney.edu.au.unichat;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +32,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Date;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -83,8 +91,8 @@ public class RequestsFragment extends Fragment {
                 new FirebaseRecyclerAdapter<Contacts, RequestsViewHolder>(options) {
                     @Override
                     protected void onBindViewHolder(@NonNull final RequestsViewHolder holder, int position, @NonNull Contacts model) {
-                        holder.itemView.findViewById(R.id.request_accept_btn).setVisibility(View.VISIBLE);
-                        holder.itemView.findViewById(R.id.request_cancel_btn).setVisibility(View.VISIBLE);
+                        holder.itemView.findViewById(R.id.request_accept_btn2).setVisibility(View.VISIBLE);
+                        holder.itemView.findViewById(R.id.request_cancel_btn2).setVisibility(View.VISIBLE);
 
                         final String list_user_id = getRef(position).getKey();
                         DatabaseReference getTypeRef = getRef(position).child("request_type").getRef();
@@ -99,10 +107,31 @@ public class RequestsFragment extends Fragment {
                                             @Override
                                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                 final String[] requestProfileImage = {"default_image"};
+                                                final String[] requestProfileImageID={""};
                                                 if(dataSnapshot.hasChild("image")){
                                                     requestProfileImage[0] = dataSnapshot.child("image").getValue().toString();
+                                                    requestProfileImageID[0] = dataSnapshot.child("imageID").getValue().toString();
 
-                                                    Picasso.get().load(requestProfileImage[0]).placeholder(R.drawable.profile_image).into(holder.profileImage);
+                                                    File imgFile = new File(android.os.Environment.getExternalStorageDirectory().getPath()+"/Unichat/images/"+requestProfileImageID[0]+".jpg");
+                                                    if(!imgFile.exists()){
+                                                        Picasso.get().load(requestProfileImage[0]).placeholder(R.drawable.profile_image).into(holder.profileImage, new com.squareup.picasso.Callback(){
+
+                                                            @Override
+                                                            public void onSuccess() {
+                                                                Picasso.get()
+                                                                        .load(requestProfileImage[0])
+                                                                        .into(picassoImageTarget(requestProfileImageID[0]));
+                                                            }
+
+                                                            @Override
+                                                            public void onError(Exception e) {
+
+                                                            }
+                                                        });
+                                                    }else {
+                                                        Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                                                        holder.profileImage.setImageBitmap(myBitmap);
+                                                    }
                                                 }
                                                 final String requestUserName = dataSnapshot.child("name").getValue().toString();
                                                 final String requestUserStatus = dataSnapshot.child("status").getValue().toString();
@@ -217,7 +246,7 @@ public class RequestsFragment extends Fragment {
                     @NonNull
                     @Override
                     public RequestsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.users_display_layout,parent,false);
+                        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.users_display_layout2,parent,false);
                         RequestsViewHolder holder = new RequestsViewHolder(view);
                         return holder;
                     }
@@ -232,12 +261,53 @@ public class RequestsFragment extends Fragment {
         Button AcceptButton, CancelButton;
         public RequestsViewHolder(@NonNull View itemView) {
             super(itemView);
-            userName = itemView.findViewById(R.id.user_profile_name);
-            userStatus = itemView.findViewById(R.id.user_status);
-            profileImage = itemView.findViewById(R.id.users_profile_image);
-            AcceptButton = itemView.findViewById(R.id.request_accept_btn);
-            CancelButton = itemView.findViewById(R.id.request_cancel_btn);
+            userName = itemView.findViewById(R.id.user_profile_name2);
+            userStatus = itemView.findViewById(R.id.user_status2);
+            profileImage = itemView.findViewById(R.id.users_profile_image2);
+            AcceptButton = itemView.findViewById(R.id.request_accept_btn2);
+            CancelButton = itemView.findViewById(R.id.request_cancel_btn2);
         }
 
+    }
+
+    private Target picassoImageTarget(final String imageName) {
+        final File directory = new File(android.os.Environment.getExternalStorageDirectory().getPath()+"/Unichat/images/");
+        return new Target() {
+            @Override
+            public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final File myImageFile = new File(directory, imageName+".jpg"); // Create image file
+                        FileOutputStream fos = null;
+                        try {
+                            fos = new FileOutputStream(myImageFile);
+                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } finally {
+                            try {
+                                fos.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        Log.i("image", "image saved to >>>" + myImageFile.getAbsolutePath());
+                    }
+                }).start();
+
+            }
+
+            @Override
+            public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+
+
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+                if (placeHolderDrawable != null) {}
+            }
+        };
     }
 }

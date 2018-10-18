@@ -3,8 +3,10 @@ package comp5216.sydney.edu.au.unichat;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,8 +20,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -68,7 +73,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     @Override
     public void onBindViewHolder(@NonNull final MessageViewHolder holder, int position) {
         String messageSenderId = mAuth.getCurrentUser().getUid();
-        Messages messages = userMessageList.get(position);
+        final Messages messages = userMessageList.get(position);
 
         String fromUserID =  messages.getFrom();
         String fromMessageType = messages.getType();
@@ -80,8 +85,17 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.hasChild("image")){
                     String receiverImage = dataSnapshot.child("image").getValue().toString();
+                    String receiverImageID = dataSnapshot.child("imageID").getValue().toString();
 
-                    Picasso.get().load(receiverImage).placeholder(R.drawable.profile_image).into(holder.receiverProfileImage);
+                    File imgFile = new File(android.os.Environment.getExternalStorageDirectory().getPath()+"/Unichat/images/"+receiverImageID+".jpg");
+                    if(!imgFile.exists()){
+                        Picasso.get().load(receiverImage).placeholder(R.drawable.profile_image).into(holder.receiverProfileImage);
+                    }else {
+                        Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                        holder.receiverProfileImage.setImageBitmap(myBitmap);
+                    }
+
+
                 }
             }
 
@@ -124,16 +138,30 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             holder.senderImage.setMaxHeight(750);
             holder.receiverImage.setMaxHeight(750);
 
-            String imageID=messages.getImageID();
+            final String imageID=messages.getImageID();
 
             if(fromUserID.equals(messageSenderId)){
                 holder.senderImage.setVisibility(View.VISIBLE);
 
-                File imgFile = new  File(android.os.Environment.getExternalStorageDirectory().getPath()+"/Unichat/images/"+imageID+".jpg");
+                File imgFile = new File(android.os.Environment.getExternalStorageDirectory().getPath()+"/Unichat/images/"+imageID+".jpg");
                 if(imgFile.exists()){
                     Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
                     holder.senderImage.setImageBitmap(myBitmap);
                 }else{
+                    Picasso.get().load(messages.getImage()).into(holder.senderImage, new com.squareup.picasso.Callback(){
+
+                        @Override
+                        public void onSuccess() {
+                            Picasso.get()
+                                    .load(messages.getImage())
+                                    .into(picassoImageTarget(imageID));
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+
+                        }
+                    });
                     Picasso.get().load(messages.getImage()).into(holder.senderImage);
                 }
 
@@ -147,6 +175,20 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                     Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
                     holder.receiverImage.setImageBitmap(myBitmap);
                 }else{
+                    Picasso.get().load(messages.getImage()).into(holder.receiverImage, new com.squareup.picasso.Callback(){
+
+                        @Override
+                        public void onSuccess() {
+                            Picasso.get()
+                                    .load(messages.getImage())
+                                    .into(picassoImageTarget(imageID));
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+
+                        }
+                    });
                     Picasso.get().load(messages.getImage()).into(holder.receiverImage);
                 }
 
@@ -160,6 +202,47 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     @Override
     public int getItemCount() {
         return userMessageList.size();
+    }
+
+    private Target picassoImageTarget(final String imageName) {
+        final File directory = new File(android.os.Environment.getExternalStorageDirectory().getPath()+"/Unichat/images/");
+        return new Target() {
+            @Override
+            public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final File myImageFile = new File(directory, imageName+".jpg"); // Create image file
+                        FileOutputStream fos = null;
+                        try {
+                            fos = new FileOutputStream(myImageFile);
+                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } finally {
+                            try {
+                                fos.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        Log.i("image", "image saved to >>>" + myImageFile.getAbsolutePath());
+                    }
+                }).start();
+
+            }
+
+            @Override
+            public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+
+
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+                if (placeHolderDrawable != null) {}
+            }
+        };
     }
 
 }

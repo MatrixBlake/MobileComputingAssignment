@@ -2,8 +2,11 @@ package comp5216.sydney.edu.au.unichat;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -35,7 +38,12 @@ import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -52,7 +60,7 @@ public class EditPostActivity extends AppCompatActivity {
     private  Button UpdatePostButton;
     private  EditText PostDescription;
 
-    private  String Description;
+    private  String Description, imageID;
 
     private StorageReference filePath,UserPostImagesRef;
 
@@ -129,37 +137,38 @@ public class EditPostActivity extends AppCompatActivity {
 
                 Uri resultUri = result.getUri();
 
-                try{
-                    compressedImage = new Compressor(this).compressToFile(FileUtil.from(this, resultUri));
-                }catch (Exception e){}
-                Uri resultUri2= Uri.fromFile(new File(compressedImage.getAbsolutePath()));
+                try {
+                    compressedImage = new Compressor(this).setMaxWidth(200).compressToFile(FileUtil.from(this, resultUri));
+                } catch (Exception e) {
+                }
+                Uri resultUri2 = Uri.fromFile(new File(compressedImage.getAbsolutePath()));
 
 
+                Date date = new Date();
+                imageID =  Long.toString(date.getTime());
 
-                Calendar calFordDate= Calendar.getInstance();
-                SimpleDateFormat currentDate=new SimpleDateFormat("yyyy-MM-dd");
-                saveCurrentDate=currentDate.format(calFordDate.getTime());
+                filePath = UserPostImagesRef.child(imageID + ".jpg");
 
-                Calendar calFordTime= Calendar.getInstance();
-                SimpleDateFormat currentTime=new SimpleDateFormat("HH:mm");
-                saveCurrentTime=currentTime.format(calFordTime.getTime());
+                saveImage(resultUri2, imageID);
 
-
-                postRandomName=saveCurrentDate+saveCurrentTime;
-
-                filePath = UserPostImagesRef.child(current_user_id+postRandomName+".jpg");
 
                 filePath.putFile(resultUri2).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                         if(task.isSuccessful()){
-                            Toast.makeText(EditPostActivity.this, "Profile Image uploaded successfully..", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(EditPostActivity.this, "Post Image uploaded successfully..", Toast.LENGTH_SHORT).show();
                             filePath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                 @Override
                                 public void onSuccess(Uri uri) {
                                     downloadUrl = uri.toString();
                                     loadingBar.dismiss();
-                                    Picasso.get().load(downloadUrl).into(uploadPostImageButton);
+                                    File imgFile = new  File(android.os.Environment.getExternalStorageDirectory().getPath()+"/Unichat/images/"+imageID+".jpg");
+                                    if(imgFile.exists()){
+                                        Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                                        uploadPostImageButton.setImageBitmap(myBitmap);
+                                    }else{
+                                        Picasso.get().load(downloadUrl).into(uploadPostImageButton);
+                                    }
                                     uploadPostImageButton.setEnabled(false);
                                 }
                             });
@@ -201,7 +210,7 @@ public class EditPostActivity extends AppCompatActivity {
         saveCurrentDate=currentDate.format(calFordDate.getTime());
 
         Calendar calFordTime= Calendar.getInstance();
-        SimpleDateFormat currentTime=new SimpleDateFormat("HH:mm");
+        SimpleDateFormat currentTime=new SimpleDateFormat("HH:mm:ss");
         saveCurrentTime=currentTime.format(calFordTime.getTime());
 
 
@@ -227,8 +236,10 @@ public class EditPostActivity extends AppCompatActivity {
                         postsMap.put("date",saveCurrentDate);
                         postsMap.put("time",saveCurrentTime);
                         postsMap.put("description",Description);
+
                         if(downloadUrl!=null){
                             postsMap.put("image",downloadUrl);
+                            postsMap.put("imageID",imageID);
                         }
                         Date date = new Date();
                         postsMap.put("lastTime",-date.getTime());
@@ -285,6 +296,44 @@ public class EditPostActivity extends AppCompatActivity {
         this.finish();
        /* Intent postIntent= new Intent(EditPostActivity.this,PostsActivity.class);
         startActivity(postIntent);*/
+    }
+
+    private void saveImage(Uri resultUri2, String imageID) {
+
+        File folder = new File(Environment.getExternalStorageDirectory() + "/Unichat/images/");
+        boolean success = true;
+        if (!folder.exists()) {
+            success = folder.mkdirs();
+        }
+        if (success) {
+            String sourceFilename= resultUri2.getPath();
+            String destinationFilename = android.os.Environment.getExternalStorageDirectory().getPath()+"/Unichat/images/"+imageID+".jpg";
+
+            BufferedInputStream bis = null;
+            BufferedOutputStream bos = null;
+
+            try {
+                bis = new BufferedInputStream(new FileInputStream(sourceFilename));
+                bos = new BufferedOutputStream(new FileOutputStream(destinationFilename, false));
+                byte[] buf = new byte[1024];
+                bis.read(buf);
+                do {
+                    bos.write(buf);
+                } while(bis.read(buf) != -1);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (bis != null) bis.close();
+                    if (bos != null) bos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+
     }
 
 }

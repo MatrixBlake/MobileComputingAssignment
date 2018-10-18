@@ -35,6 +35,7 @@ public class GroupsFragment extends Fragment {
     private ListView list_view;
     private ArrayAdapter<String> arrayAdapter;
     private ArrayList<String> list_of_groups = new ArrayList<>();
+    private ArrayList<String> list_of_group_types = new ArrayList<>();
 
     private DatabaseReference RootRef;
     private FirebaseAuth mAuth;
@@ -67,8 +68,10 @@ public class GroupsFragment extends Fragment {
                 String currentGroupName = parent.getItemAtPosition(position).toString();
                 Intent groupChatIntent = new Intent(getContext(),GroupChatActivity.class);
                 String currentGroupKey = groupKeys.get(position);
+                String currentGroupType = list_of_group_types.get(position);
                 groupChatIntent.putExtra("groupName",currentGroupName);
                 groupChatIntent.putExtra("groupKey",currentGroupKey);
+                groupChatIntent.putExtra("groupType",currentGroupType);
                 startActivity(groupChatIntent);
             }
         });
@@ -90,11 +93,14 @@ public class GroupsFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 list_of_groups.clear();
+                list_of_group_types.clear();
                 for(DataSnapshot data : dataSnapshot.getChildren()){
                     groupKeys.add(data.getKey());
                     String thisGroupNameLong = data.getValue().toString();
-                    String thisGroupName = thisGroupNameLong.substring(1,thisGroupNameLong.length()-4);
+                    String thisGroupName = thisGroupNameLong.substring(1,thisGroupNameLong.length()-8);
+                    String thisGroupType = thisGroupNameLong.substring(thisGroupNameLong.length()-7,thisGroupNameLong.length()-1);
                     list_of_groups.add(thisGroupName);
+                    list_of_group_types.add(thisGroupType);
                 }
 
                 arrayAdapter.notifyDataSetChanged();

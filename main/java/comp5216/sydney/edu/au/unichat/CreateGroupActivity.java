@@ -100,10 +100,10 @@ public class CreateGroupActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                Iterator iterator = dataSnapshot.getChildren().iterator();
+                userKeys.clear();
 
-                while (iterator.hasNext()) {
-                    String userKey = ((DataSnapshot) iterator.next()).getKey();
+                for(DataSnapshot data : dataSnapshot.getChildren()){
+                    String userKey = data.getKey();
                     userKeys.add(userKey);
                     RootRef.child("Users").child(userKey).child("name").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
@@ -115,22 +115,22 @@ public class CreateGroupActivity extends AppCompatActivity {
                                 itemsAdapter = new ArrayAdapter<String>(CreateGroupActivity.this, android.R.layout.simple_list_item_1, items);
                                 createGroupListview.setAdapter(itemsAdapter);
 
-                                createGroupListview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-                                    public boolean onItemLongClick(AdapterView<?> parent, View view, final int
-                                            position, long rowId) {
-                                        AlertDialog.Builder builder = new AlertDialog.Builder(CreateGroupActivity.this,R.style.AlertDialog);
+                                createGroupListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                                        AlertDialog.Builder builder = new AlertDialog.Builder(CreateGroupActivity.this, R.style.AlertDialog);
                                         builder.setTitle("Add members");
                                         final String nowUserName = items.get(position);
-                                        builder.setMessage("Are you sure to add "+nowUserName+" to group "+groupName+"?");
+                                        builder.setMessage("Are you sure to add " + nowUserName + " to group " + groupName + "?");
 
                                         builder.setNegativeButton("Yes", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 String userKey = userKeys.get(position);
-                                                RootRef.child("Users").child(userKey).child("groups").child(groupKey).child(groupName).setValue("in");
+                                                RootRef.child("Users").child(userKey).child("groups").child(groupKey).child(groupName).setValue("normal");
                                                 RootRef.child("Groups").child(groupKey).child("people").child(nowUserName).setValue("in");
 
-                                                peopleTextView.setText(items.get(position)+" has been added to Group "+groupName);
+                                                peopleTextView.setText(items.get(position) + " has been added to Group " + groupName);
                                             }
                                         });
 
@@ -141,8 +141,6 @@ public class CreateGroupActivity extends AppCompatActivity {
                                             }
                                         });
                                         builder.show();
-
-                                        return true;
                                     }
 
                                 });
@@ -164,7 +162,7 @@ public class CreateGroupActivity extends AppCompatActivity {
     }
 
     private void getPeople() {
-        RootRef.child("Groups").child(groupKey).child("people").addValueEventListener(new ValueEventListener() {
+        RootRef.child("Groups").child(groupKey).child("people").orderByKey().addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
