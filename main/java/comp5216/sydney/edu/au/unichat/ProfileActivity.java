@@ -352,12 +352,14 @@ public class ProfileActivity extends AppCompatActivity {
                     }
 
                     final String retName = dataSnapshot.child("name").getValue().toString();
+                    final String userImageID = dataSnapshot.child("imageID").getValue().toString();
 
 
                     Intent chatIntent = new Intent(ProfileActivity.this,ChatActivity.class);
                     chatIntent.putExtra("visit_user_id",receiverUserID);
                     chatIntent.putExtra("visit_user_name", retName);
                     chatIntent.putExtra("visit_image", retImage[0]);
+                    chatIntent.putExtra("visit_image_id", userImageID);
                     startActivity(chatIntent);
 
                 }
