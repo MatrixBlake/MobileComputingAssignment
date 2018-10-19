@@ -13,57 +13,69 @@
 
     <TextView
         android:id="@+id/create_group_hint"
-        android:layout_width="wrap_content"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:text="Click to add, Long click to remove"
+        android:text="Friend list  Click to add"
         android:textSize="18sp"
         android:textColor="#000000"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="12dp"
         android:layout_marginTop="8dp"
         android:layout_below="@id/create_group_toolbar"/>
 
     <TextView
-        android:id="@+id/create_group_people"
         android:layout_width="wrap_content"
-        android:layout_height="30dp"
+        android:layout_height="wrap_content"
+        android:text="People in the group"
         android:textSize="18sp"
         android:textColor="#000000"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:layout_below="@id/create_group_hint"/>
+        android:layout_marginLeft="220dp"
+        android:layout_marginTop="18dp"
+        android:layout_below="@id/create_group_toolbar"/>
 
-    <ListView
-        android:id="@+id/lstView_create_group"
-        android:layout_width="0dp"
-        android:layout_height="200dp"
-        android:layout_below="@id/create_group_people"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp" />
 
-    <TextView
-        android:id="@+id/people_in_group"
+
+    <LinearLayout
+        android:id="@+id/listViews"
+        android:layout_below="@id/create_group_hint"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:layout_above="@id/back">
+
+        <ListView
+            android:id="@+id/lstView_create_group"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_weight="0.5"
+            />
+
+
+
+        <ListView
+            android:id="@+id/create_group_users_listview"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_weight="0.5"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="people in the group"
-        android:layout_below="@id/lstView_create_group"/>
-
-    <ListView
-        android:id="@+id/create_group_users_listview"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/people_in_group"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp" />
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
+        android:onClick="backClick"
+        android:text="Back"
+        android:textAllCaps="false"
+        android:layout_centerHorizontal="true" />
 
 
 </RelativeLayout>

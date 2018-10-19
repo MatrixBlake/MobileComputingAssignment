@@ -226,4 +226,8 @@ public class GroupChatActivity extends AppCompatActivity {
         MessageInputText.setText("");
 
     }
+
+    public void backClick(View v){
+        finish();
+    }
 }

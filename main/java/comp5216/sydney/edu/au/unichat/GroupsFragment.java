@@ -99,7 +99,12 @@ public class GroupsFragment extends Fragment {
                     String thisGroupNameLong = data.getValue().toString();
                     String thisGroupName = thisGroupNameLong.substring(1,thisGroupNameLong.length()-8);
                     String thisGroupType = thisGroupNameLong.substring(thisGroupNameLong.length()-7,thisGroupNameLong.length()-1);
-                    list_of_groups.add(thisGroupName);
+                    if(thisGroupType.equals("course")){
+                        list_of_groups.add("Course: "+thisGroupName.toUpperCase());
+                    }else{
+                        list_of_groups.add(thisGroupName);
+                    }
+
                     list_of_group_types.add(thisGroupType);
                 }
 

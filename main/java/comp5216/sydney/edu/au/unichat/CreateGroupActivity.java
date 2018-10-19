@@ -50,8 +50,7 @@ public class CreateGroupActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_group);
 
         createGroupListview=findViewById(R.id.lstView_create_group);
-        peopleInGroupListview=findViewById(R.id.reate_group_users_listview);
-        peopleTextView=findViewById(R.id.create_group_people);
+        peopleInGroupListview=findViewById(R.id.create_group_users_listview);
 
         groupName = getIntent().getStringExtra("GroupName");
         groupKey = getIntent().getStringExtra("GroupKey");
@@ -130,7 +129,7 @@ public class CreateGroupActivity extends AppCompatActivity {
                                                 RootRef.child("Users").child(userKey).child("groups").child(groupKey).child(groupName).setValue("normal");
                                                 RootRef.child("Groups").child(groupKey).child("people").child(nowUserName).setValue("in");
 
-                                                peopleTextView.setText(items.get(position) + " has been added to Group " + groupName);
+                                                Toast.makeText(CreateGroupActivity.this, items.get(position) + " has been added to Group " + groupName, Toast.LENGTH_SHORT).show();
                                             }
                                         });
 
@@ -178,6 +177,10 @@ public class CreateGroupActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    public void backClick(View v){
+        finish();
     }
 
 }

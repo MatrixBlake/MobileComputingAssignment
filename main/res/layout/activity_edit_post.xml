@@ -47,7 +47,7 @@
         android:maxHeight="200dp"
         android:layout_below="@id/post_description"
         android:layout_above="@+id/update_post_button"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"
         android:layout_centerHorizontal="true"
         android:src="@drawable/post_upload_image"/>

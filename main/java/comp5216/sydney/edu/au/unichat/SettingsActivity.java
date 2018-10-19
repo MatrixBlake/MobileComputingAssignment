@@ -265,7 +265,7 @@ public class SettingsActivity extends AppCompatActivity {
         builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                final String groupName = groupNameField.getText().toString();
+                final String groupName = groupNameField.getText().toString().toUpperCase();
                 final DatabaseReference groupKeyRef = RootRef.child("CourseGroups").push();
                 RootRef.child("CourseGroups").orderByChild("groupName").equalTo(groupName).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -400,7 +400,7 @@ public class SettingsActivity extends AppCompatActivity {
                     String groupTypeinGetCourses = groupNameLong.substring(groupNameLong.length()-7,groupNameLong.length()-1);
                     //Toast.makeText(SettingsActivity.this, groupTypeinGetCourses, Toast.LENGTH_SHORT).show();
                     if(groupTypeinGetCourses.equals("course")){
-                        courseNames.add(groupNameinGetCourses);
+                        courseNames.add(groupNameinGetCourses.toUpperCase());
                     }
 
                 }
