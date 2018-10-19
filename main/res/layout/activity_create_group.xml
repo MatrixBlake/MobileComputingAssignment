@@ -46,17 +46,17 @@
         android:layout_marginTop="8dp" />
 
     <TextView
-        android:id="@+id/peopel_in_group"
+        android:id="@+id/people_in_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="people in the group"
         android:layout_below="@id/lstView_create_group"/>
 
     <ListView
-        android:id="@+id/reate_group_users_listview"
+        android:id="@+id/create_group_users_listview"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/peopel_in_group"
+        android:layout_below="@id/people_in_group"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
@@ -65,6 +65,5 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp" />
 
-    />
 
 </RelativeLayout>
