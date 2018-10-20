@@ -153,7 +153,7 @@ public class ProfileActivity extends AppCompatActivity {
                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                             if(dataSnapshot.hasChild(receiverUserID)){
                                                 Current_State ="friends";
-                                                SendMessageRequestButton.setText("Remove this Contact");
+                                                SendMessageRequestButton.setText("Remove This Contact");
                                                 DeclineMessageRequestButton.setVisibility(View.VISIBLE);
                                                 DeclineMessageRequestButton.setEnabled(true);
                                                 DeclineMessageRequestButton.setText("Send Message");
@@ -261,7 +261,7 @@ public class ProfileActivity extends AppCompatActivity {
                                                                                 public void onComplete(@NonNull Task<Void> task) {
                                                                                     SendMessageRequestButton.setEnabled(true);
                                                                                     Current_State = "friends";
-                                                                                    SendMessageRequestButton.setText("Remove this Contact");
+                                                                                    SendMessageRequestButton.setText("Remove This Contact");
 
                                                                                     DeclineMessageRequestButton.setVisibility(View.VISIBLE);
                                                                                     DeclineMessageRequestButton.setEnabled(true);
