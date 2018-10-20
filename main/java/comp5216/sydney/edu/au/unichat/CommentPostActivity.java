@@ -113,8 +113,7 @@ public class CommentPostActivity extends AppCompatActivity {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     Date date = new Date();
-                                    postRef.child("comments").child(dataSnapshot.getValue().toString()+" : "+newComment).setValue("");
-                                    postRef.child("comments").child(dataSnapshot.getValue().toString()+" : "+newComment).child("time").setValue(date.getTime());
+                                    postRef.child("comments").child(Long.toString(date.getTime())).child("content").setValue(dataSnapshot.getValue().toString()+" : "+newComment);
                                 }
 
                                 @Override
@@ -237,13 +236,14 @@ public class CommentPostActivity extends AppCompatActivity {
     }
 
     private void RetrieveAndDisplayComments() {
-        postRef.child("comments").orderByChild("time").addValueEventListener(new ValueEventListener() {
+        postRef.child("comments").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 list_of_comments.clear();
                 for(DataSnapshot data : dataSnapshot.getChildren()){
-                    list_of_comments.add(data.getKey());
+                    String v = data.getValue().toString();
+                    list_of_comments.add(v.substring(10,v.length()-2));
                 }
 
                 arrayAdapter.notifyDataSetChanged();

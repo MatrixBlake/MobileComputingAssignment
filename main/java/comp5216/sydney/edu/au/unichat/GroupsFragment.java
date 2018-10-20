@@ -36,6 +36,7 @@ public class GroupsFragment extends Fragment {
     private ArrayAdapter<String> arrayAdapter;
     private ArrayList<String> list_of_groups = new ArrayList<>();
     private ArrayList<String> list_of_group_types = new ArrayList<>();
+    private ArrayList<String> list_of_group_keys = new ArrayList<>();
 
     private DatabaseReference RootRef;
     private FirebaseAuth mAuth;
@@ -65,7 +66,7 @@ public class GroupsFragment extends Fragment {
         list_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String currentGroupName = parent.getItemAtPosition(position).toString();
+                String currentGroupName = list_of_groups.get(position);
                 Intent groupChatIntent = new Intent(getContext(),GroupChatActivity.class);
                 String currentGroupKey = groupKeys.get(position);
                 String currentGroupType = list_of_group_types.get(position);
@@ -107,6 +108,7 @@ public class GroupsFragment extends Fragment {
 
                     list_of_group_types.add(thisGroupType);
                 }
+
 
                 arrayAdapter.notifyDataSetChanged();
             }

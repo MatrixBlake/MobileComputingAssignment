@@ -67,6 +67,7 @@ public class GroupChatActivity extends AppCompatActivity {
     private RecyclerView userMessagesList;
     private String fromName;
     private Button addNewBtn;
+    private ChildEventListener eventListener;
 
 
     @Override
@@ -81,6 +82,7 @@ public class GroupChatActivity extends AppCompatActivity {
 
         groupName=getIntent().getExtras().get("groupName").toString();
         groupKey=getIntent().getExtras().get("groupKey").toString();
+
         groupType=getIntent().getExtras().get("groupType").toString();
 
 
@@ -128,6 +130,36 @@ public class GroupChatActivity extends AppCompatActivity {
                 startActivity(editGroupIntent);
             }
         });
+
+        eventListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                GroupMessages messages = dataSnapshot.getValue(GroupMessages.class);
+                messagesList.add(messages);
+                messageAdapter.notifyDataSetChanged();
+                userMessagesList.smoothScrollToPosition(userMessagesList.getAdapter().getItemCount());
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
@@ -169,39 +201,15 @@ public class GroupChatActivity extends AppCompatActivity {
         messagesList.clear();
 
 
-        GroupRef.child(groupKey).child("messages")
-                .addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                        GroupMessages messages = dataSnapshot.getValue(GroupMessages.class);
-                        messagesList.add(messages);
-                        messageAdapter.notifyDataSetChanged();
-                        userMessagesList.smoothScrollToPosition(userMessagesList.getAdapter().getItemCount());
-                    }
+        GroupRef.child(groupKey).child("messages").addChildEventListener(eventListener);
 
-                    @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+    }
 
-                    }
-
-                    @Override
-                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                    }
-
-                    @Override
-                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-
-
-
+    @Override
+    protected void onPause() {
+        super.onPause();
+        messagesList.clear();
+        GroupRef.child(groupKey).child("messages").removeEventListener(eventListener);
     }
 
     private void SendMessage(){

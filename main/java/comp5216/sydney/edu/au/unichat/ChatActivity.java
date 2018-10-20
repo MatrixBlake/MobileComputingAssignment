@@ -392,6 +392,7 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         if (menuItem.getItemId() == android.R.id.home) {
+            RootRef.child("Messages").child(messageSenderID).child(messageReceiverID).removeEventListener(eventListener);
             finish();
         }
         return super.onOptionsItemSelected(menuItem);

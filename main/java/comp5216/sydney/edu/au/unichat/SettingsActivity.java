@@ -70,6 +70,7 @@ public class SettingsActivity extends AppCompatActivity {
     ListView coursesListView;
     private ArrayList<String> courseNames = new ArrayList<>();
     private ArrayAdapter<String> itemsAdapter;
+    private String newImageID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -171,10 +172,10 @@ public class SettingsActivity extends AppCompatActivity {
                 Uri resultUri2= Uri.fromFile(new File(compressedImage.getAbsolutePath()));
 
                 Date date = new Date();
-                imageID=Long.toString(date.getTime());
-                filePath = UserProfileImagesRef.child(imageID+".jpg");
+                newImageID=Long.toString(date.getTime());
+                filePath = UserProfileImagesRef.child(newImageID+".jpg");
 
-                saveImage(resultUri2, imageID);
+                saveImage(resultUri2, newImageID);
 
                 filePath.putFile(resultUri2).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                     @Override
@@ -191,9 +192,17 @@ public class SettingsActivity extends AppCompatActivity {
                                                 @Override
                                                 public void onComplete(@NonNull Task<Void> task) {
                                                     if (task.isSuccessful()) {
-                                                        Toast.makeText(SettingsActivity.this, "Image save in Database successfully...", Toast.LENGTH_SHORT).show();
-                                                        RootRef.child("Users").child(currentUserID).child("imageID").setValue(imageID);
-                                                        loadingBar.dismiss();
+
+                                                        RootRef.child("Users").child(currentUserID).child("imageID").setValue(newImageID).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<Void> task) {
+                                                                if(task.isSuccessful()){
+                                                                    Toast.makeText(SettingsActivity.this, "Image save in Database successfully...", Toast.LENGTH_SHORT).show();
+                                                                    loadingBar.dismiss();
+                                                                }
+                                                            }
+                                                        });
+
                                                     } else {
                                                         String message = task.getException().toString();
                                                         Toast.makeText(SettingsActivity.this, "Error: " + message, Toast.LENGTH_SHORT).show();
@@ -224,8 +233,10 @@ public class SettingsActivity extends AppCompatActivity {
 
         if(TextUtils.isEmpty(setUserName)){
             Toast.makeText(this, "Please write your user name first...", Toast.LENGTH_SHORT).show();
-        }else if(TextUtils.isEmpty(setUserStatus)){
+        }else if(TextUtils.isEmpty(setUserStatus)) {
             Toast.makeText(this, "Please write your user status...", Toast.LENGTH_SHORT).show();
+        }else if(setUserName.contains(".") || setUserName.contains("#") || setUserName.contains("$") || setUserName.contains("[") || setUserName.contains("]")){
+            Toast.makeText(this, "Name can't has '.','#','$','[',']'", Toast.LENGTH_SHORT).show();
         }else{
             RootRef.child("Users").child(currentUserID).child("name").setValue(setUserName);
             RootRef.child("Users").child(currentUserID).child("status").setValue(setUserStatus);
@@ -244,6 +255,8 @@ public class SettingsActivity extends AppCompatActivity {
             Toast.makeText(this, "Please write your user name first...", Toast.LENGTH_SHORT).show();
         }else if(TextUtils.isEmpty(setUserStatus)){
             Toast.makeText(this, "Please write your user status...", Toast.LENGTH_SHORT).show();
+        }else if(setUserName.contains(".") || setUserName.contains("#") || setUserName.contains("$") || setUserName.contains("[") || setUserName.contains("]")){
+            Toast.makeText(this, "Name can't has '.', '#', '$', '[', ']'", Toast.LENGTH_SHORT).show();
         }else{
             RootRef.child("Users").child(currentUserID).child("name").setValue(setUserName);
             RootRef.child("Users").child(currentUserID).child("status").setValue(setUserStatus);
@@ -257,7 +270,7 @@ public class SettingsActivity extends AppCompatActivity {
         builder.setTitle("Enter Course Number: ");
 
         final EditText groupNameField = new EditText(SettingsActivity.this);
-        groupNameField.setHint("e.g 1234");
+        groupNameField.setHint("e.g COMP5216");
         builder.setView(groupNameField);
 
 
@@ -266,26 +279,32 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 final String groupName = groupNameField.getText().toString().toUpperCase();
-                final DatabaseReference groupKeyRef = RootRef.child("CourseGroups").push();
-                RootRef.child("CourseGroups").orderByChild("groupName").equalTo(groupName).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if(!dataSnapshot.exists()){
-                            groupKeyRef.child("groupName").setValue(groupName);
-                            RootRef.child("Users").child(currentUserID).child("groups").child(groupKeyRef.getKey()).child(groupNameField.getText().toString()).setValue("course");
-                        }else{
-                            for(DataSnapshot data: dataSnapshot.getChildren()){
-                                RootRef.child("Users").child(currentUserID).child("groups").child(data.getKey()).child(groupNameField.getText().toString()).setValue("course");
+                String coursePattern = "^([A-Za-z]){4}(\\d){4}$";
+                if(!groupName.matches(coursePattern)){
+                    Toast.makeText(SettingsActivity.this, "Please write the right course number", Toast.LENGTH_SHORT).show();
+                }else{
+                    final DatabaseReference groupKeyRef = RootRef.child("CourseGroups").push();
+                    RootRef.child("CourseGroups").orderByChild("groupName").equalTo(groupName).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if(!dataSnapshot.exists()){
+                                groupKeyRef.child("groupName").setValue(groupName);
+                                RootRef.child("Users").child(currentUserID).child("groups").child(groupKeyRef.getKey()).child(groupNameField.getText().toString()).setValue("course");
+                            }else{
+                                for(DataSnapshot data: dataSnapshot.getChildren()){
+                                    RootRef.child("Users").child(currentUserID).child("groups").child(data.getKey()).child(groupNameField.getText().toString()).setValue("course");
+                                }
                             }
+
                         }
 
-                    }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        }
+                    });
+                }
 
-                    }
-                });
 
             }
         });

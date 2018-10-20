@@ -161,11 +161,12 @@ public class CreateGroupActivity extends AppCompatActivity {
     }
 
     private void getPeople() {
+
         RootRef.child("Groups").child(groupKey).child("people").orderByKey().addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
                 peoples.clear();
+
                 for(DataSnapshot data : dataSnapshot.getChildren()){
                     peoples.add(data.getKey());
                 }
