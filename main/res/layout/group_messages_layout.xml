@@ -11,6 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:textSize="14sp"
+        android:layout_marginLeft="5dp"
         android:text="Other Name"/>
 
     <TextView
@@ -21,6 +22,7 @@
         android:layout_below="@id/group_chat_other_name"
         android:background="@drawable/receiver_messages_layout"
         android:text="receiver messages here"
+        android:layout_marginLeft="5dp"
         android:padding="10dp"
         android:textSize="18sp"
         android:textStyle="bold"/>
@@ -32,6 +34,7 @@
         android:maxWidth="320dp"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="10dp"
+        android:layout_marginRight="5dp"
         android:layout_alignParentTop="@+id/receiver_message_text"
         android:background="@drawable/sender_messages_layout"
         android:text="sender messages"

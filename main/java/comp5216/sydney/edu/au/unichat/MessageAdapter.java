@@ -36,6 +36,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     private List<Messages> userMessageList;
     private FirebaseAuth mAuth;
     private DatabaseReference userRef;
+    Bitmap myBitmap;
 
     public MessageAdapter(List<Messages> userMessageList){
         this.userMessageList = userMessageList;
@@ -44,7 +45,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
     public class MessageViewHolder extends RecyclerView.ViewHolder{
         public TextView senderMessageText, receiverMessageText;
-        public CircleImageView receiverProfileImage;
         public ImageView senderImage, receiverImage;
 
         public MessageViewHolder(View itemView) {
@@ -52,7 +52,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
             senderMessageText = (TextView) itemView.findViewById(R.id.sender_message_text);
             receiverMessageText = (TextView) itemView.findViewById(R.id.receiver_message_text);
-            receiverProfileImage = (CircleImageView) itemView.findViewById(R.id.message_profile_image);
             senderImage=(ImageView)itemView.findViewById(R.id.sender_message_image);
             receiverImage =(ImageView)itemView.findViewById(R.id.receiver_message_image);
         }
@@ -80,34 +79,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
         userRef = FirebaseDatabase.getInstance().getReference().child("Users").child(fromUserID);
 
-        userRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.hasChild("image")){
-                    String receiverImage = dataSnapshot.child("image").getValue().toString();
-                    String receiverImageID = dataSnapshot.child("imageID").getValue().toString();
-
-                    File imgFile = new File(android.os.Environment.getExternalStorageDirectory().getPath()+"/Unichat/images/"+receiverImageID+".jpg");
-                    if(!imgFile.exists()){
-                        Picasso.get().load(receiverImage).placeholder(R.drawable.profile_image).into(holder.receiverProfileImage);
-                    }else {
-                        Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-                        holder.receiverProfileImage.setImageBitmap(myBitmap);
-                    }
-
-
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
         if(fromMessageType.equals("text")){
             holder.receiverMessageText.setVisibility(View.INVISIBLE);
-            holder.receiverProfileImage.setVisibility(View.INVISIBLE);
             holder.senderMessageText.setVisibility(View.INVISIBLE);
             holder.senderImage.setVisibility(View.INVISIBLE);
             holder.receiverImage.setVisibility(View.INVISIBLE);
@@ -120,7 +93,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                 holder.senderMessageText.setTextColor(Color.BLACK);
                 holder.senderMessageText.setText(messages.getMessage());
             }else{
-                holder.receiverProfileImage.setVisibility(View.VISIBLE);
                 holder.receiverMessageText.setVisibility(View.VISIBLE);
 
                 holder.receiverMessageText.setBackgroundResource(R.drawable.receiver_messages_layout);
@@ -129,7 +101,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             }
         } else{
             holder.receiverMessageText.setVisibility(View.INVISIBLE);
-            holder.receiverProfileImage.setVisibility(View.INVISIBLE);
             holder.senderMessageText.setVisibility(View.INVISIBLE);
             holder.senderImage.setVisibility(View.INVISIBLE);
             holder.receiverImage.setVisibility(View.INVISIBLE);
@@ -167,7 +138,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
 
             }else{
-                holder.receiverProfileImage.setVisibility(View.VISIBLE);
                 holder.receiverImage.setVisibility(View.VISIBLE);
 
                 File imgFile = new  File(android.os.Environment.getExternalStorageDirectory().getPath()+"/Unichat/images/"+imageID+".jpg");
