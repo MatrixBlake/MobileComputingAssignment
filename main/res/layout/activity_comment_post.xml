@@ -61,6 +61,16 @@
         android:textStyle="bold"
         android:textAlignment="center"/>
 
+    <View
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#0d4b0e"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/comment_post_date"/>
+
     <TextView
         android:id="@+id/word_comments"
         android:layout_width="wrap_content"
@@ -70,7 +80,7 @@
         android:text="Comments:"
         android:textColor="#000000"
         android:textSize="18sp"
-        android:layout_below="@+id/comment_post_date"/>
+        android:layout_below="@+id/line"/>
 
 
     <ListView

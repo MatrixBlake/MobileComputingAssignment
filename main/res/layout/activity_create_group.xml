@@ -15,7 +15,7 @@
         android:id="@+id/create_group_hint"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:text="Friend list  Click to add"
+        android:text="Friend List  Click to Add"
         android:textSize="18sp"
         android:textColor="#000000"
         android:layout_marginLeft="12dp"
@@ -25,7 +25,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="People in the group"
+        android:text="Group Member(s)"
         android:textSize="18sp"
         android:textColor="#000000"
         android:layout_marginLeft="220dp"
@@ -73,7 +73,7 @@
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="5dp"
         android:onClick="backClick"
-        android:text="Back"
+        android:text="Finish"
         android:textAllCaps="false"
         android:layout_centerHorizontal="true" />
 
