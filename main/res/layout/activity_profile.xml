@@ -60,7 +60,7 @@
         android:background="@drawable/buttons"
         android:textStyle="bold"
         android:textSize="20sp"
-        android:text="Send Message"
+        android:text="Send Request"
         android:textAllCaps="false"/>
 
     <Button
