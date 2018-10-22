@@ -80,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
             loadingBar.show();
 
             String newPassword=password;
-         //   newPassword = md5(password+email);
+            newPassword = md5(password+email);
 
             mAuth.signInWithEmailAndPassword(email,newPassword)
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -88,14 +88,14 @@ public class LoginActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if(task.isSuccessful()){
                                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                               // if(user.isEmailVerified()==true){
+                                if(user.isEmailVerified()==true){
                                     SendUserToMainActivity();
                                     Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
                                     loadingBar.dismiss();
-                              //  }else{
-                            //        Toast.makeText(LoginActivity.this, "Please verify the e-mail", Toast.LENGTH_SHORT).show();
-                             //       loadingBar.dismiss();
-                               // }
+                                }else{
+                                    Toast.makeText(LoginActivity.this, "Please verify the e-mail", Toast.LENGTH_SHORT).show();
+                                    loadingBar.dismiss();
+                                }
                             }else{
                                 String message =task.getException().toString();
                                 Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();

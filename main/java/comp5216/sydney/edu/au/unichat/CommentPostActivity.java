@@ -243,7 +243,7 @@ public class CommentPostActivity extends AppCompatActivity {
                 list_of_comments.clear();
                 for(DataSnapshot data : dataSnapshot.getChildren()){
                     String v = data.getValue().toString();
-                    list_of_comments.add(v.substring(10,v.length()-1));
+                    list_of_comments.add(v.substring(9,v.length()-1));
                 }
 
                 arrayAdapter.notifyDataSetChanged();

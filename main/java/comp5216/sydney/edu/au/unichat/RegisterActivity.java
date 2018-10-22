@@ -71,11 +71,11 @@ public class RegisterActivity extends AppCompatActivity {
             Toast.makeText(RegisterActivity.this,"Please enter password...",Toast.LENGTH_SHORT).show();
         }
         else{
-//            if(!email.endsWith(".sydney.edu.au")){
-//                Toast.makeText(RegisterActivity.this,"Please enter Sydney students or staff email!",Toast.LENGTH_SHORT).show();
-//            }else if(!password.matches(pattern)){
-//                Toast.makeText(this, "The length of password should between 6 to 16 and has at least one number and one character.", Toast.LENGTH_SHORT).show();
-//            } else {
+            if(!email.endsWith(".sydney.edu.au")){
+                Toast.makeText(RegisterActivity.this,"Please enter Sydney students or staff email!",Toast.LENGTH_SHORT).show();
+            }else if(!password.matches(pattern)){
+                Toast.makeText(this, "The length of password should between 6 to 16 and has at least one number and one character.", Toast.LENGTH_SHORT).show();
+            } else {
 
                 loadingBar.setTitle("Creating New Account");
                 loadingBar.setMessage("Please wait! We are creating new account for you...");
@@ -84,7 +84,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                 String newPassword = password;
 
-                // newPassword=md5(password+email);
+                newPassword=md5(password+email);
 
                 mAuth.createUserWithEmailAndPassword(email, newPassword).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
@@ -97,7 +97,7 @@ public class RegisterActivity extends AppCompatActivity {
                             RootRef.child("Users").child(currentUserID).child("image").setValue("https://firebasestorage.googleapis.com/v0/b/unichat-a963c.appspot.com/o/Profile%20Images%2Fprofile_image.png?alt=media&token=476e7533-afb2-41a8-a201-494efd324049");
                             RootRef.child("Users").child(currentUserID).child("imageID").setValue("default_image");
 
-                            //sendVerificationEmail();
+                            sendVerificationEmail();
 
                             SendUserToLoginActivity();
                             Toast.makeText(RegisterActivity.this, "Account Created Successfully...", Toast.LENGTH_SHORT).show();
@@ -109,7 +109,7 @@ public class RegisterActivity extends AppCompatActivity {
                         }
                     }
                 });
-           // }
+            }
         }
     }
 

@@ -61,6 +61,7 @@ public class PostsActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setTitle("Posts");
 
         mAuth=FirebaseAuth.getInstance();
         currentUserID= mAuth.getCurrentUser().getUid();

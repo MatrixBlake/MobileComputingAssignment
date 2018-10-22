@@ -68,11 +68,11 @@ public class MainActivity extends AppCompatActivity {
         if(currentUser==null){
             SendUserToLoginActivity();
         }else{
-//            if(!currentUser.isEmailVerified()){
-//                SendUserToLoginActivity();
-//            }else{
+            if(!currentUser.isEmailVerified()){
+                SendUserToLoginActivity();
+            }else{
                 VerifyUserExistence();
- //           }
+            }
         }
     }
 

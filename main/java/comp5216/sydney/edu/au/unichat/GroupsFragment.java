@@ -95,6 +95,7 @@ public class GroupsFragment extends Fragment {
 
                 list_of_groups.clear();
                 list_of_group_types.clear();
+                groupKeys.clear();
                 for(DataSnapshot data : dataSnapshot.getChildren()){
                     groupKeys.add(data.getKey());
                     String thisGroupNameLong = data.getValue().toString();
